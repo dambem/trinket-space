@@ -1,18 +1,49 @@
 import Link from "next/link";
 import { formatDate, getBlogPosts } from "app/lib/posts";
+import { defineQuery } from "next-sanity";
+import { client } from "app/sanity/client";
 
 export const metadata = {
   title: "Blog",
   description: "Nextfolio Blog",
 };
 
-export default function BlogPosts() {
+const options = { next: { revalidate: 60 } };
+
+
+const EVENTS_QUERY = defineQuery(`*[
+  _type == "event"
+  && defined(slug.current)
+]{_id, name, slug, date}|order(date desc)`);
+
+
+export default async function BlogPosts() {
   let allBlogs = getBlogPosts();
+  const events = await client.fetch(EVENTS_QUERY, {}, options);
 
   return (
     <section>
       <h1 className="mb-8 text-2xl font-medium tracking-tight">Our Blog</h1>
       <div>
+      <ul>
+        {events.map((event) => (
+          <li key={event._id}>
+            <Link
+              className="hover:underline"
+              href={`/events/${event?.slug?.current}`}
+            >
+              <h2>{event?.name}</h2>
+              {event?.date && (
+                <p className="text-gray-500">
+                  {new Date(event.date).toLocaleDateString()}
+                </p>
+              )}
+            </Link>
+          </li>
+        ))}
+      </ul>
+      </div>
+      {/* <div>
         {allBlogs
           .sort((a, b) => {
             if (
@@ -39,7 +70,7 @@ export default function BlogPosts() {
               </div>
             </Link>
           ))}
-      </div>
+      </div> */}
     </section>
   );
 }
