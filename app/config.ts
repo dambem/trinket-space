@@ -1,16 +1,15 @@
 export const metaData = {
-  baseUrl: "https://nextfolio-template.vercel.app/",
-  title: "Nextfolio",
-  name: "Sirius",
+  baseUrl: "https://latarnia.vercel.app/",
+  title: "Latarnia",
+  name: "Damian Bemben",
   ogImage: "/opengraph-image.png",
   description:
-    "A clean, fast, and lightweight portfolio template built with Next.js, Vercel, and Tailwind CSS for optimal performance.",
+    "A small template website, containing a few different projects.",
 };
 
 export const socialLinks = {
-  twitter: "https://x.com/1tssirius",
-  github: "https://github.com/1msirius/Nextfolio",
-  instagram: "https://www.instagram.com/",
-  linkedin: "https://www.linkedin.com/",
+  github: "https://github.com/dambem",
+  instagram: "https://www.instagram.com/geochipuk/",
+  linkedin: "https://www.linkedin.com/in/bemben/",
   email: "mailto:example@gmail.com",
 };

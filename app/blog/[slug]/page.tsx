@@ -3,6 +3,21 @@ import { notFound } from "next/navigation";
 import { CustomMDX } from "app/components/mdx";
 import { formatDate, getBlogPosts } from "app/lib/posts";
 import { metaData } from "app/config";
+import { defineQuery, PortableText, type SanityDocument } from "next-sanity";
+
+import { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import { client } from "app/sanity/client";
+import Link from "next/link";
+import Image from "next/image";
+const options = { next: { revalidate: 60 } };
+
+
+const EVENT_QUERY = defineQuery(`*[
+  _type == "post" &&
+  slug.current == $slug
+][0]`);
+const { projectId, dataset } = client.config();
+
 
 export async function generateStaticParams() {
   let posts = getBlogPosts();
@@ -54,48 +69,24 @@ export async function generateMetadata({
   };
 }
 
-export default function Blog({ params }) {
-  let post = getBlogPosts().find((post) => post.slug === params.slug);
-
-  if (!post) {
+export default async function Blog({ params }: {params: {slug: string}}) {
+  const event = await client.fetch(EVENT_QUERY, params, options);
+  if (!event) {
     notFound();
   }
-
+  const {
+    post,
+    name,
+    slug
+  } = event;
   return (
-    <section>
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            headline: post.metadata.title,
-            datePublished: post.metadata.publishedAt,
-            dateModified: post.metadata.publishedAt,
-            description: post.metadata.summary,
-            image: post.metadata.image
-              ? `${metaData.baseUrl}${post.metadata.image}`
-              : `/og?title=${encodeURIComponent(post.metadata.title)}`,
-            url: `${metaData.baseUrl}/blog/${post.slug}`,
-            author: {
-              "@type": "Person",
-              name: metaData.name,
-            },
-          }),
-        }}
-      />
-      <h1 className="title mb-3 font-medium text-2xl tracking-tight">
-        {post.metadata.title}
-      </h1>
-      <div className="flex justify-between items-center mt-2 mb-8 text-medium">
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          {formatDate(post.metadata.publishedAt)}
-        </p>
-      </div>
-      <article className="prose prose-quoteless prose-neutral dark:prose-invert">
-        <CustomMDX source={post.content} />
+    <main>
+    <p>
+      {name}
+    </p>
+    <article className="prose prose-quoteless prose-neutral dark:prose-invert">
+        <CustomMDX source={post} />
       </article>
-    </section>
+    </main>
   );
 }
