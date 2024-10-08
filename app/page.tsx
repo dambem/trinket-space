@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function Page() {
   return (
     <section>
-      <a href={socialLinks.twitter} target="_blank">
+      <a href={socialLinks.github} target="_blank">
         <Image
           src="/avatar.png"
           alt="Profile photo"
