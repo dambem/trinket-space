@@ -18,7 +18,7 @@ export default function Page() {
       </a>
 
       <h1 className="mb-8 text-2xl font-medium tracking-tight">
-        Latarnia - A small portfolio by Damian Bemben
+        A small portfolio by Damian Bemben
       </h1>
       <hr></hr>
 

@@ -1,13 +1,22 @@
 import React from "react";
 import type { Metadata } from "next";
-import { projects } from "./project-data";
+// import { projects } from "./project-data";
+import { defineQuery } from "next-sanity";
+import { client } from "app/sanity/client";
 
 export const metadata: Metadata = {
   title: "Projects",
   description: "My Projects",
 };
+const options = { next: { revalidate: 60 } };
 
-export default function Projects() {
+const projects_QUERY = defineQuery(`*[
+  _type == "project"
+]{url, title, description, year}`);
+
+export default async function Projects() {
+  const projects = await client.fetch(projects_QUERY, {}, options);
+
   return (
     <section>
       <h1 className="mb-8 text-2xl font-medium tracking-tight">Projects</h1>

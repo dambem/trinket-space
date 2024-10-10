@@ -22,7 +22,7 @@
 
 /* Dark theme colors */
 .dark {
-  background-color: #121212;
+  background-color: #0D0409;
   --sh-class: #4c97f8;
   --sh-identifier: white;
   --sh-sign: #8996a3;
@@ -56,7 +56,7 @@ html {
 }
 
 .prose a {
-  @apply transition-all decoration-neutral-400 dark:decoration-neutral-600 underline-offset-2 decoration-[0.1em] font-normal text-[#333333] dark:text-[#D4D4D4];
+  @apply transition-all decoration-neutral-400 dark:decoration-neutral-600 underline-offset-2 decoration-[0.1em] font-normal text-[#333333] dark:text-[#F2D785];
 }
 
 .prose a:hover {

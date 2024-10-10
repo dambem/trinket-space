@@ -5,6 +5,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
+        ale:  ["var(--font-afacad-sans)"],
         sans: ["var(--font-geist-sans)"],
         mono: ["var(--font-geist-mono)"],
       },
