@@ -14,7 +14,7 @@ export function Navbar() {
     <nav className="lg:mb-16 mb-12 py-5">
       <div className="flex flex-col md:flex-row md:items-center justify-between">
         <div className="flex items-center">
-          <Image src= "/lamplight-6.gif" width={40} height={40} ></Image>
+          <Image alt='spinning lamplight logo' src= "/lamplight-6.gif" width={40} height={40} ></Image>
           <Link href="/" className="font-mono text-2xl tracking-tight">
               {metaData.title}
           </Link>
