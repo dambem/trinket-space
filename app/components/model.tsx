@@ -4,11 +4,12 @@ import {Mesh} from 'three';
 import { Canvas, useFrame, useLoader, useThree  } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { OrthographicCamera, OrbitControls } from '@react-three/drei';
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 
 
 function Model({ modelPath }) {
     const meshRef = useRef<Mesh>(null);
-    const gltf = useLoader(GLTFLoader, modelPath);
+    const gltf = useLoader(GLTFLoader, modelPath) as GLTF;
     useFrame((state, delta) => {
         if (meshRef.current) {
             meshRef.current.rotation.y += delta/5.5;
@@ -49,8 +50,8 @@ export function ModelSnippet({modelPath}){
             <Canvas style={{height:300}}>
                 <CameraSetup />
                 <ambientLight intensity={Math.PI / 2} />
-                <spotLight position={[30, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} />
-                <pointLight position={[0, 0, 10]} decay={0} intensity={Math.PI*100} />
+                <spotLight position={[30, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI*5} />
+                <pointLight position={[0, 0, 10]} decay={0} intensity={Math.PI*10} />
                 <Model modelPath={modelPath}></Model>
                 <OrbitControls enablePan={false} enableZoom={true} />
             </Canvas>

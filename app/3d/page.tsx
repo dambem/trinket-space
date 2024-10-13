@@ -15,7 +15,7 @@ export default function Three() {
     const hovered = true;
     return (
         <div id="canvas-container">
-            <h3>Canary Wharf</h3>
+            <h3 className="mb-8 text-2xl font-medium tracking-tight">Canary Wharf</h3>
             <ModelSnippet modelPath={'3d_models/canarywharf.glb'}></ModelSnippet>
 
         </div>
