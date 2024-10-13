@@ -1,6 +1,6 @@
 export const metaData = {
   baseUrl: "https://latarnia.vercel.app/",
-  title: "Latarnia",
+  title: "damian bemben",
   name: "Damian Bemben",
   ogImage: "/opengraph-image.png",
   description:

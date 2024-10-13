@@ -18,7 +18,7 @@ export default function Page() {
       </a>
 
       <h1 className="mb-8 text-2xl font-medium tracking-tight">
-        A small portfolio by Damian Bemben
+        lamplight - a small portfolio
       </h1>
       <hr></hr>
 
@@ -34,6 +34,9 @@ export default function Page() {
                  I also created <Link href="https://geochip.uk">
                   GeoChip
                 </Link> a business creating 3D printed and XR projects aimed around making model cities feel alive. 
+              </p>
+              <p>
+                I'm especially excited in the creation of different technical experiences, and love the field of digital technology. Contact me to have a chat about what we might be able to create!
               </p>
               <p>
                 This serves as a little trinket collection of projects, interests, and samples of writing - in a futile attempt to bring back the old internet

@@ -4,9 +4,10 @@ import { ThemeSwitch } from "./theme-switch";
 import { metaData } from "../config";
 
 const navItems = {
-  "/blog": { name: "Writings" },
-  "/projects": { name: "Projects" },
-  "/photos": { name: "Photos" },
+  "/writing ": { name: "writings" },
+  "/projects": { name: "projects" },
+  "/photos": { name: "photos" },
+  "/3d": { name: "3d works"}
 };
 
 export function Navbar() {
@@ -26,8 +27,8 @@ export function Navbar() {
               href={path}
               className="transition-all hover:text-neutral-800 dark:hover:text-neutral-200 flex align-middle relative"
             >
-              {name}
-            </Link>
+            {name}
+            </Link> 
           ))}
           <ThemeSwitch />
         </div>
