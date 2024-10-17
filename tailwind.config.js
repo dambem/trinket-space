@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: "class",
-  content: ["./app/**/*.{js,ts,jsx,tsx,mdx}", "./public/**/*.svg"],
+  content: ["./app/**/*.{js,ts,jsx,tsx,mdx}", "./public/**/*.svg",  "./node_modules/flowbite/**/*.js"],
   theme: {
     extend: {
       fontFamily: {
@@ -19,5 +19,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("@tailwindcss/typography")],
+  plugins: [require("@tailwindcss/typography"),require('flowbite/plugin'),require('daisyui'),  ],
 };

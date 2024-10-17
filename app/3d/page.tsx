@@ -17,7 +17,10 @@ export default function Three() {
         <div id="canvas-container">
             <h3 className="mb-8 text-2xl font-medium tracking-tight">Canary Wharf</h3>
             <ModelSnippet modelPath={'3d_models/canarywharf.glb'}></ModelSnippet>
-
+            <h3 className="mb-8 text-2xl font-medium tracking-tight">Winchester</h3>
+            <ModelSnippet modelPath={'3d_models/winchester.glb'}></ModelSnippet>
+            <h3 className="mb-8 text-2xl font-medium tracking-tight">NYC</h3>
+            <ModelSnippet modelPath={'3d_models/NYC.glb'}></ModelSnippet>
         </div>
       )
 }

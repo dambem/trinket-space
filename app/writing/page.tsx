@@ -1,3 +1,4 @@
+// import React, { useState, useMemo } from 'react';
 import Link from "next/link";
 import { formatDate, getBlogPosts } from "app/lib/posts";
 import { defineQuery } from "next-sanity";
@@ -10,20 +11,21 @@ export const metadata = {
 
 const options = { next: { revalidate: 60 } };
 
-
 const posts_QUERY = defineQuery(`*[
   _type == "post"
   && defined(slug.current)
-]{_id, name, created, slug}`);
+]{_id, name, created, type, slug, 'typeTitle': type.title
+} | order(created desc)`);
 
 
 export default async function BlogPosts() {
   let allBlogs = getBlogPosts();
   const posts = await client.fetch(posts_QUERY, {}, options);
-
   return (
     <section>
       <h1 className="mb-8 text-2xl font-medium tracking-tight">Writings</h1>
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+      </div>
       <div>
       <ul>
         {posts.map((post) => (
@@ -37,10 +39,16 @@ export default async function BlogPosts() {
                 <p className="text-black dark:text-white tracking-tight">
                   {post.name}
                 </p>
-                <p className="text-neutral-600 dark:text-neutral-400 tabular-nums text-sm">
+
+
+                <span className="rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
+                  {post.type}
+                </span>
+
+              </div>
+              <p className="text-neutral-600 dark:text-neutral-400 tabular-nums text-sm">
                   {formatDate(post.created, false)}
                 </p>
-              </div>
             </Link>
           </li>
         ))}

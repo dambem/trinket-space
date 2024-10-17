@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 // import { projects } from "./project-data";
 import { defineQuery } from "next-sanity";
 import { client } from "app/sanity/client";
+import imageUrlBuilder from '@sanity/image-url'
+
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -12,11 +14,10 @@ const options = { next: { revalidate: 60 } };
 
 const projects_QUERY = defineQuery(`*[
   _type == "project"
-]{url, title, description, year}`);
+]{url, title, description,  'imageUrl': image.asset->url,  year} | order(created desc)`);
 
 export default async function Projects() {
   const projects = await client.fetch(projects_QUERY, {}, options);
-
   return (
     <section>
       <h1 className="mb-8 text-2xl font-medium tracking-tight">Projects</h1>
@@ -29,8 +30,8 @@ export default async function Projects() {
             rel="noopener noreferrer"
             className="block group hover:opacity-80 transition-opacity duration-200"
           >
-            <div className="flex flex-col">
-              <div className="w-full flex justify-between items-baseline">
+            <div className="flex flex-col ">
+              <div className="w-full flex justify-between items-baseline ">
                 <span className="text-black dark:text-white font-medium tracking-tight">
                   {project.title}
                 </span>
@@ -38,10 +39,14 @@ export default async function Projects() {
                   {project.year}
                 </span>
               </div>
-              <p className="prose prose-neutral dark:prose-invert pt-3">
+              <div>
+              <img className="w-full rounded max-h-20 object-cover mr-4 grayscale hover:grayscale-0" src={project.imageUrl}></img> 
+              <span className="w-2/3 prose prose-neutral dark:prose-invert pt-3">
                 {project.description}
-              </p>
+              </span>
+              </div>
             </div>
+
           </a>
         ))}
       </div>
