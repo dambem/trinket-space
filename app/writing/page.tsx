@@ -1,4 +1,4 @@
-import BlogPostsClient from './blogpost'
+import BlogPostsClient from '../components/blogpost'
 import { client } from "app/sanity/client";
 import { defineQuery } from "next-sanity";
 
