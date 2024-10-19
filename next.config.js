@@ -5,7 +5,10 @@ const nextConfig = {
   images: {
     domains: ["cdn.sanity.io", "via.placeholder.com"],
   },
-  
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
+
   async rewrites() {
     return [
       {
