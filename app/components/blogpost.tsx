@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from "next/link";
 
 interface Post {
@@ -17,53 +17,51 @@ interface BlogPostsClientProps {
 }
 
 function formatDate(date: string, includeRelative = false) {
-    let currentDate = new Date();
-    if (!date.includes("T")) {
-      date = `${date}T00:00:00`;
-    }
-    let targetDate = new Date(date);
-  
-    let yearsAgo = currentDate.getFullYear() - targetDate.getFullYear();
-    let monthsAgo = currentDate.getMonth() - targetDate.getMonth();
-    let daysAgo = currentDate.getDate() - targetDate.getDate();
-  
-    let formattedDate = "";
-  
-    if (yearsAgo > 0) {
-      formattedDate = `${yearsAgo}y ago`;
-    } else if (monthsAgo > 0) {
-      formattedDate = `${monthsAgo}mo ago`;
-    } else if (daysAgo > 0) {
-      formattedDate = `${daysAgo}d ago`;
-    } else {
-      formattedDate = "Today";
-    }
-  
-    let fullDate = targetDate.toLocaleString("en-us", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  
-    if (!includeRelative) {
-      return fullDate;
-    }
-  
-    return `${fullDate} (${formattedDate})`;
-  }
+  // ... (keep the existing formatDate function)
+}
 
 export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
   const [query, setQuery] = useState("");
+  const [selectedType, setSelectedType] = useState("All");
+  const postTypes = useMemo(() => {
+    const types = new Set(posts.map(post => post.type));
+    return ["All", ...Array.from(types)];
+  }, [posts]);
+
+  const filteredPosts = useMemo(() => {
+    return posts.filter((post) =>
+      (selectedType === "All" || post.type === selectedType) &&
+      (post.name.toLowerCase().includes(query.toLowerCase()) ||
+       post.type.toLowerCase().includes(query.toLowerCase()))
+    );
+  }, [posts, query, selectedType]);
 
   return (
     <section>
       <h1 className="mb-8 text-2xl font-medium tracking-tight">Writings</h1>
-      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-        {/* Add any filtering UI here if needed */}
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-4">
+        <input
+          type="text"
+          placeholder="Search posts..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+                <select
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {postTypes.map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
+        </select>
       </div>
       <div>
         <ul>
-          {posts.map((post) => (
+          {filteredPosts.map((post) => (
             <li key={post._id}>
               <Link
                 className="flex flex-col space-y-1 mb-4 transition-opacity duration-200 hover:opacity-80"
@@ -84,6 +82,9 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
             </li>
           ))}
         </ul>
+        {filteredPosts.length === 0 && (
+          <p className="text-neutral-600 dark:text-neutral-400">No posts found matching your search.</p>
+        )}
       </div>
     </section>
   );
