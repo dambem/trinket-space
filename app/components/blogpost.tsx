@@ -1,6 +1,4 @@
-'use client';
-
-import React, { useState } from 'react';
+// import React, { useState } from 'react';
 import Link from "next/link";
 
 interface Post {
@@ -53,7 +51,7 @@ function formatDate(date: string, includeRelative = false) {
   }
 
 export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
-  const [query, setQuery] = useState("");
+  // const [query, setQuery] = useState("");
 
   return (
     <section>
