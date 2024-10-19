@@ -1,11 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
+  swcMinify: false,
   images: {
     domains: ["cdn.sanity.io", "via.placeholder.com"],
   },
-  
   // async rewrites() {
   //   return [
   //     {
