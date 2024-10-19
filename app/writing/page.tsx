@@ -1,4 +1,4 @@
-import BlogPostsClient from './BlogPost'
+import BlogPostsClient from './blogpost'
 import { client } from "app/sanity/client";
 import { defineQuery } from "next-sanity";
 
@@ -10,7 +10,7 @@ const posts_QUERY = defineQuery(`*[
 ]{_id, name, created, type, slug, 'typeTitle': type.title
 } | order(created desc)`);
 
-export default async function page() {
+export default async function BlogPosts() {
   const posts = await client.fetch(posts_QUERY, {}, options);
   return <BlogPostsClient posts={posts} />;
 }
