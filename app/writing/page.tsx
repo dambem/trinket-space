@@ -10,7 +10,7 @@ const posts_QUERY = defineQuery(`*[
 ]{_id, name, created, type, slug, 'typeTitle': type.title
 } | order(created desc)`);
 
-export default async function BlogPosts() {
+export default async function page() {
   const posts = await client.fetch(posts_QUERY, {}, options);
   return <BlogPostsClient posts={posts} />;
 }
