@@ -3,6 +3,8 @@
 import React, { useState, useMemo } from 'react';
 import Link from "next/link";
 import { formatDate } from './dateformat';
+import { calculateReadingTime } from './reading';
+
 interface Post {
   _id: string;
   name: string;
@@ -11,13 +13,12 @@ interface Post {
   snippet: string;
   slug: { current: string };
   typeTitle: string;
+  post: string;
 }
 
 interface BlogPostsClientProps {
   posts: Post[];
 }
-
-
 
 export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
   const [query, setQuery] = useState("");
@@ -37,19 +38,20 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
 
   return (
     <section>
-      <h1 className="mb-8 text-2xl font-medium tracking-tight">Writings</h1>
-      <div className="flex flex-col sm:flex-row space-y-1 sm:space-x-2 mb-4">
+
+      <div className='grid place-content-end'>
         <input
           type="text"
           placeholder="Search posts..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-md"
         />
+        <br></br>
                 <select
           value={selectedType}
           onChange={(e) => setSelectedType(e.target.value)}
-          className="px-4 py-2 select select-bordered w-full max-w-xs"
+          className="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
         >
           {postTypes.map((type) => (
             <option key={type} value={type}>
@@ -58,6 +60,9 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
           ))}
         </select>
       </div>
+          <br></br>
+                <h1 className="mb-8 text-2xl font-medium tracking-tight">Writings</h1>
+
       <div>
         <ul>
           {filteredPosts.map((post) => (
@@ -77,6 +82,9 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
                 </div>
                 <span className="text-xs text-neutral-600 dark:text-neutral-200 tracking-tight">
                     {post.snippet}
+                </span>
+                <span className="text-neutral-600 dark:text-neutral-400 tabular-nums text-xs" >
+                  {calculateReadingTime(post.post)} Minutes Reading
                 </span>
                 <p className="text-neutral-600 dark:text-neutral-400 tabular-nums text-sm">
                   {formatDate(post.created)}

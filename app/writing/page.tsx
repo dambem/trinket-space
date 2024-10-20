@@ -7,7 +7,7 @@ const options = { next: { revalidate: 60 } };
 const posts_QUERY = defineQuery(`*[
   _type == "post"
   && defined(slug.current)
-]{_id, name, created, snippet, type, slug, 'typeTitle': type.title
+]{_id, name, post, created, snippet, type, slug, 'typeTitle': type.title
 } | order(created desc)`);
 
 export default async function BlogPosts() {

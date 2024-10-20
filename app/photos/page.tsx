@@ -20,13 +20,20 @@ export default function Photos() {
           { src: "/photos/tile.webp", alt: "Big Ben" },
         ]}
       />
-
       <ImageGrid
         columns={3}
         images={[
           { src: "/photos/3dprints/nyc1.png", alt: "Roman columns" },
           { src: "/photos/3dprints/oceanvillage1.png", alt: "Big Ben" },
           { src: "/photos/3dprints/southampton1.jpg", alt: "Sacré-Cœur Basilica" },
+          { src: "/photos/opera.png", alt: "Sacré-Cœur Basilica" },
+
+        ]}
+      />
+      <ImageGrid
+        columns={3}
+        images={[
+
           { src: "/photos/3dprints/winchester1.png", alt: "Eiffel Tower" },
           { src: "/photos/3dprints/winchester7.png", alt: "Taj Mahal" },
           { src: "/photos/photo7.png", alt: "Canary Wharf" },
