@@ -30,7 +30,7 @@ export function Navbar() {
             {name}
             </Link> 
           ))}
-          <ThemeSwitch />
+          {/* <ThemeSwitch /> */}
         </div>
       </div>
     </nav>
