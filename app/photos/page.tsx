@@ -21,7 +21,7 @@ export default function Photos() {
         ]}
       />
       <ImageGrid
-        columns={3}
+        columns={4}
         images={[
           { src: "/photos/3dprints/nyc1.png", alt: "Roman columns" },
           { src: "/photos/3dprints/oceanvillage1.png", alt: "Big Ben" },
