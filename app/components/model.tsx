@@ -12,7 +12,7 @@ function Model({ modelPath }) {
     const gltf = useLoader(GLTFLoader, modelPath) as GLTF;
     useFrame((state, delta) => {
         if (meshRef.current) {
-            meshRef.current.rotation.y += delta/5.5;
+            meshRef.current.rotation.y += delta/10;
         }
     });
     return (
@@ -46,15 +46,15 @@ function CameraSetup() {
 
 export function ModelSnippet({modelPath}){
     return(
-        <section>
+        <div className="w-full h-[300px]">
             <Canvas style={{height:300}}>
                 <CameraSetup />
                 <ambientLight intensity={Math.PI / 2} />
-                <spotLight position={[30, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI*5} />
+                {/* <spotLight position={[30, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI*5} /> */}
                 <pointLight position={[0, 0, 10]} decay={0} intensity={Math.PI*10} />
                 <Model modelPath={modelPath}></Model>
                 <OrbitControls enablePan={false} enableZoom={true} />
             </Canvas>
-        </section>
+        </div>
     )
 }
