@@ -7,12 +7,13 @@ const navItems = {
   "/writing ": { name: "writings" },
   "/projects": { name: "projects" },
   "/photos": { name: "photos" },
+  "/code": { name: "code" },
   "/3d": { name: "3d works"}
 };
 
 export function Navbar() {
   return (
-    <nav className="lg:mb-16 mb-12 py-5">
+    <nav id='nav-custom' className="lg:mb-8 mb-8 py-5">
       <div className="flex flex-col md:flex-row md:items-center justify-between">
         <div className="flex items-center">
           <Image alt='spinning lamplight logo' src= "/lamplight-6.gif" width={40} height={40} ></Image>

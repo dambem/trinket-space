@@ -1,7 +1,20 @@
 import Image from "next/image";
 import { socialLinks } from "./config";
 import Link from "next/link";
-
+import {
+  FaXTwitter,
+  FaGithub,
+  FaInstagram,
+  FaRss,
+  FaLinkedinIn,
+} from "react-icons/fa6";
+function SocialLink({ href, icon: Icon }) {
+  return (
+    <Link href={href}  style={{display: 'inline-block'}} target="_blank" rel="noopener noreferrer">
+      <Icon />
+    </Link>
+  );
+}
 export default function Page() {
   return (
     <section>
@@ -36,7 +49,9 @@ export default function Page() {
                 </Link> a business creating 3D printed and XR projects aimed around making model cities feel alive. 
               </p>
               <p>
-                I'm especially excited in the creation of different technical experiences, and love the field of digital technology. Contact me to have a chat about what we might be able to create!
+                I'm especially excited in the creation of different technical experiences, and love the field of digital technology. 
+                Contact me ( <SocialLink href={socialLinks.linkedin} icon={FaLinkedinIn} />  <SocialLink href={socialLinks.instagram} icon={FaInstagram} /> ) to have a chat about what we might be able to create! 
+
               </p>
               <p>
                 This serves as a little trinket collection of projects, interests, and samples of writing - in a futile attempt to bring back the old internet

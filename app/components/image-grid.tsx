@@ -1,5 +1,9 @@
-import React from "react";
+'use client';
+
+import React, {useState} from "react";
 import Image from "next/image";
+import { PhotoProvider, PhotoView } from 'react-photo-view';
+import 'react-photo-view/dist/react-photo-view.css';
 
 interface ImageGridProps {
   images: {
@@ -10,10 +14,7 @@ interface ImageGridProps {
   columns?: 2 | 3 | 4; // Accepts 2, 3, or 4 columns
 }
 
-export const ImageGrid: React.FC<ImageGridProps> = ({
-  images,
-  columns = 3,
-}) => {
+export const ImageGrid = ({ images, columns = 3 }) => {
   const gridClass = {
     2: "grid-cols-2 sm:grid-cols-2",
     3: "grid-cols-2 sm:grid-cols-3",
@@ -21,8 +22,8 @@ export const ImageGrid: React.FC<ImageGridProps> = ({
   }[columns];
 
   return (
-    <section>
-      <div className={`grid ${gridClass} gap-4 my-8`}>
+    <PhotoProvider>
+      <div className={`grid ${gridClass} gap-2 my-2`}>
         {images.map((image, index) => (
           <div key={index} className="relative aspect-square">
             {image.href ? (
@@ -32,6 +33,7 @@ export const ImageGrid: React.FC<ImageGridProps> = ({
                 href={image.href}
                 className="block w-full h-full"
               >
+                <p> Image </p>
                 <Image
                   alt={image.alt}
                   src={image.src}
@@ -42,6 +44,8 @@ export const ImageGrid: React.FC<ImageGridProps> = ({
                 />
               </a>
             ) : (
+              <div>
+              <p> Image </p>
               <Image
                 alt={image.alt}
                 src={image.src}
@@ -50,10 +54,11 @@ export const ImageGrid: React.FC<ImageGridProps> = ({
                 priority
                 className="rounded-lg object-cover"
               />
+              </div>
             )}
           </div>
         ))}
       </div>
-    </section>
+    </PhotoProvider>
   );
 };

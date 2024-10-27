@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Link from "next/link";
 import { formatDate } from './dateformat';
 import { calculateReadingTime } from './reading';
+import { Search, Filter } from 'lucide-react';
 
 interface Post {
   _id: string;
@@ -38,20 +39,30 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
 
   return (
     <section>
+                <h1 className="mb-8 text-2xl font-medium tracking-tight">Writings</h1>
 
-      <div className='grid place-content-end'>
+<div className="mb-4 flex flex-col sm:flex-row gap-2">
+      <div className="relative flex-grow">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500">
+          <Search size={18} />
+        </div>
         <input
           type="text"
           placeholder="Search posts..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-md"
+          className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 py-2 pl-10 pr-4 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none focus:ring-0 transition-colors duration-200"
         />
-        <br></br>
-                <select
+      </div>
+      
+      <div className="relative min-w-[100px]">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500">
+          <Filter size={18} />
+        </div>
+        <select
           value={selectedType}
           onChange={(e) => setSelectedType(e.target.value)}
-          className="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+          className="w-full appearance-none rounded-lg border border-white-200 dark:border-white-800 bg-white-50 dark:bg-zinc-900 py-2 pl-10 pr-8 text-sm text-zinc-900 dark:text-zinc-100 focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none focus:ring-0 transition-colors duration-200"
         >
           {postTypes.map((type) => (
             <option key={type} value={type}>
@@ -59,10 +70,13 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
             </option>
           ))}
         </select>
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 dark:text-zinc-500">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
       </div>
-          <br></br>
-                <h1 className="mb-8 text-2xl font-medium tracking-tight">Writings</h1>
-
+    </div>
       <div>
         <ul>
           {filteredPosts.map((post) => (
