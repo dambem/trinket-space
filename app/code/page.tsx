@@ -6,7 +6,6 @@ import type { Metadata } from "next";
 import { defineQuery } from "next-sanity";
 import { client } from "app/sanity/client";
 import imageUrlBuilder from '@sanity/image-url'
-import {Frameset, Frame} from 'react-frame-component'
 
 const metadata: Metadata = {
   title: "Code",
@@ -24,11 +23,6 @@ export default async function Code() {
     <section>
       <h1 className="mb-8 text-2xl font-medium tracking-tight">Projects</h1>
       <div className="space-y-6">
-        <Frameset>
-            <Frame>
-
-            </Frame>
-        </Frameset>
 
       </div>
     </section>
