@@ -5,6 +5,7 @@ import { Canvas, useFrame, useLoader, useThree  } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { OrthographicCamera, OrbitControls } from '@react-three/drei';
 import { ModelSnippet } from "app/components/model";
+import { ArtGallery } from 'app/components/art_gallery'
 // import CanaryWharf from 'public/3d_models/canarywharf.glb'
 // export const metadata: Metadata = {
 //   title: "3D Design",
@@ -30,13 +31,16 @@ export default function Three() {
         { title: 'Canary Wharf', path: '3d_models/canarywharf.glb' },
         { title: 'Winchester', path: '3d_models/winchester.glb' },
         { title: 'NYC', path: '3d_models/NYC.glb' },
+        { title: 'Winchester', path: '3d_models/winchester.glb' },
       ];
     
     return (
         <div className="container mx-auto px-4 py-8">
+        <ArtGallery/>
+
         <h2 className="text-3xl font-bold mb-8">3D Model Gallery</h2>
         <ModelGrid models={modelData} />
-      </div>
+        </div>
   
       )
 }

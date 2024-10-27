@@ -7,9 +7,11 @@ const navItems = {
   "/writing ": { name: "writings" },
   "/projects": { name: "projects" },
   "/photos": { name: "photos" },
-  "/code": { name: "code" }
+  "/3d": { name: "3d works"}
 };
   // "/3d": { name: "3d works"}
+  //   "/code": { name: "code" },
+
 
 export function Navbar() {
   return (
