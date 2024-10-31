@@ -31,7 +31,7 @@ export default function Three() {
         { title: 'Canary Wharf', path: '3d_models/canarywharf.glb' },
         { title: 'Winchester', path: '3d_models/winchester.glb' },
         { title: 'NYC', path: '3d_models/NYC.glb' },
-        { title: 'Winchester', path: '3d_models/winchester.glb' },
+        { title: 'Malta', path: '3d_models/malta.glb' },
       ];
     
     return (

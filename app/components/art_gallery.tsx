@@ -93,12 +93,12 @@ const Painting = ({ position, rotation = [0.0, 0.0, 0.0], size = [3, 2], color }
     return (
       <group position={position} rotation={[0, 0, 0]}>
         {/* Frame */}
-        <mesh position={[0, 0, -0.1]}>
+        <mesh position={[0, 0, 0.1]}>
           <boxGeometry args={[size[0] + 0.2, size[1] + 0.2, 0.1]} />
           <meshPhongMaterial color="#444444" />
         </mesh>
         {/* Canvas */}
-        <mesh position={[0, 0, -0.05]}>
+        <mesh position={[0, 0, 0.2]}>
           <planeGeometry args={[3,2]} />
           <meshPhongMaterial color={color} />
         </mesh>
@@ -123,7 +123,7 @@ const Floor = () => (
 
 export function ArtGallery(){
     return(
-    <div style={{height:400}}>
+    <div style={{height:400, width:'100%'}}>
     
     <Canvas shadows>
     <Player/>
