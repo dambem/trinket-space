@@ -89,9 +89,9 @@ const Player = () => {
 };
 
   
-const Painting = ({ position, rotation = [0, 0, 0], size = [3, 2], color }) => {
+const Painting = ({ position, rotation = [0.0, 0.0, 0.0], size = [3, 2], color }) => {
     return (
-      <group position={position} rotation={rotation}>
+      <group position={position} rotation={[0, 0, 0]}>
         {/* Frame */}
         <mesh position={[0, 0, -0.1]}>
           <boxGeometry args={[size[0] + 0.2, size[1] + 0.2, 0.1]} />
@@ -99,7 +99,7 @@ const Painting = ({ position, rotation = [0, 0, 0], size = [3, 2], color }) => {
         </mesh>
         {/* Canvas */}
         <mesh position={[0, 0, -0.05]}>
-          <planeGeometry args={size} />
+          <planeGeometry args={[3,2]} />
           <meshPhongMaterial color={color} />
         </mesh>
       </group>
