@@ -11,7 +11,6 @@ export default function Photos() {
   return (
     <section>
       <h1 className="mb-8 text-2xl font-medium tracking-tight">Photos</h1>
-
       <ImageGrid
         columns={3}
         images={[
@@ -33,7 +32,6 @@ export default function Photos() {
       <ImageGrid
         columns={3}
         images={[
-
           { src: "/photos/3dprints/winchester1.png", alt: "Eiffel Tower" },
           { src: "/photos/3dprints/winchester7.png", alt: "Taj Mahal" },
           { src: "/photos/photo7.png", alt: "Canary Wharf" },

@@ -1,5 +1,4 @@
-'use client';
-import React, {useRef, useState} from "react";
+import React from "react";
 import {Mesh} from 'three';
 import { Canvas, useFrame, useLoader, useThree  } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -36,9 +35,17 @@ export default function Three() {
     
     return (
         <div className="container mx-auto px-4 py-8">
-        <ArtGallery/>
 
         <h2 className="text-3xl font-bold mb-8">3D Model Gallery</h2>
+        <br></br>
+        <hr></hr>
+        <br></br>
+          <div className="relative w-screen left-[50%] right-[50%] -ml-[50vw] -mr-[50vw]">
+        <ArtGallery/>
+        </div>
+        <br></br>
+        <hr></hr>
+
         <ModelGrid models={modelData} />
         </div>
   

@@ -1,4 +1,5 @@
 // Model component (renamed from Cube and made more generic)
+'use client';
 import React, {useRef, useState, Suspense} from "react";
 import {Mesh} from 'three';
 import { Canvas, useFrame, useLoader, useThree  } from '@react-three/fiber';

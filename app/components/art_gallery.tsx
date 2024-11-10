@@ -1,14 +1,19 @@
 // Model component (renamed from Cube and made more generic)
+'use client';
 import React, {useRef, useState, useEffect} from "react";
 import {Mesh} from 'three';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { OrthographicCamera, OrbitControls } from '@react-three/drei';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { PointerLockControls } from '@react-three/drei';
+import { PointerLockControls, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
+import { Bloom, DepthOfField, EffectComposer, Noise, Vignette, Glitch } from '@react-three/postprocessing'
+import { GlitchMode } from 'postprocessing'
+
 const MOVEMENT_SPEED = 5;
+const COLLISION_BUFFER = 0.5; // Add a small buffer to prevent getting too close to walls
 
 const SPEED = 5;
 const keys = {
@@ -54,6 +59,7 @@ const useKeyboardControls = () => {
 const Player = () => {
   const controlsRef = useRef<any>();
   const movement = useKeyboardControls();
+  const raycaster = new THREE.Raycaster()
 
   useFrame((state, delta) => {
     if (!controlsRef.current) return;
@@ -62,8 +68,11 @@ const Player = () => {
     const direction = new THREE.Vector3();
     const frontVector = new THREE.Vector3();
     const sideVector = new THREE.Vector3();
+    
+    // Get current position
+    const currentPosition = controls.getObject().position.clone();
 
-    // Update movement based on keyboard state
+    // Calculate intended movement
     if (movement.KeyW) frontVector.setZ(-1);
     if (movement.KeyS) frontVector.setZ(1);
     if (movement.KeyA) sideVector.setX(-1);
@@ -74,22 +83,35 @@ const Player = () => {
       .normalize()
       .multiplyScalar(MOVEMENT_SPEED * delta);
 
-    controls.moveRight(-direction.x);
-    controls.moveForward(-direction.z);
+    // Calculate next position before applying movement
+    const nextPosition = currentPosition.clone();
+    nextPosition.x -= direction.x;
+    nextPosition.z -= direction.z;
 
-    // Simple collision detection
-    const position = controls.getObject().position;
-    // position.x = Math.max(-9, Math.min(9, position.x));
-    // position.z = Math.max(-9, Math.min(9, position.z));
-    position.y = 3; // Lock the height to prevent any vertical movement
+    // Setup raycaster for collision detection
+    const moveDirection = new THREE.Vector3();
+    moveDirection.subVectors(nextPosition, currentPosition).normalize();
+    raycaster.set(currentPosition, moveDirection);
 
+    // Check for collisions
+    const intersects = raycaster.intersectObjects(state.scene.children, true);
+    
+    // Only move if no collision or collision is far enough
+    const distance = currentPosition.distanceTo(nextPosition);
+    if (intersects.length === 0 || intersects[0].distance > distance + COLLISION_BUFFER) {
+      controls.moveRight(-direction.x);
+      controls.moveForward(-direction.z);
+    }
+
+    // Lock height
+    controls.getObject().position.y = 3;
   });
 
   return <PointerLockControls ref={controlsRef} />;
 };
-
-  
 const Painting = ({ position, rotation = [0.0, 0.0, 0.0], size = [3, 2], color }) => {
+    const texture = useTexture('/photos/photo1.jpg')
+
     return (
       <group position={position} rotation={[0, 0, 0]}>
         {/* Frame */}
@@ -100,14 +122,14 @@ const Painting = ({ position, rotation = [0.0, 0.0, 0.0], size = [3, 2], color }
         {/* Canvas */}
         <mesh position={[0, 0, 0.2]}>
           <planeGeometry args={[3,2]} />
-          <meshPhongMaterial color={color} />
+          <meshPhongMaterial map={texture} />
         </mesh>
       </group>
     );
   };
 
-const Floor = () => (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+const Floor = ({position, rotation}) => (
+    <mesh rotation={rotation} position={position}>
       <planeGeometry args={[20, 20]} />
       <meshPhongMaterial color="#cccccc" />
     </mesh>
@@ -126,6 +148,19 @@ export function ArtGallery(){
     <div style={{height:400, width:'100%'}}>
     
     <Canvas shadows>
+    <EffectComposer>
+        <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} />
+        <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
+        <Noise opacity={0.2} />
+        <Glitch 
+        delay={new THREE.Vector2(1.5, 3.5)} // min and max glitch delay
+        duration={new THREE.Vector2(0.1, 0.2)} // min and max glitch duration
+        strength={new THREE.Vector2(0.8, 1.0)} // min and max glitch strength
+        mode={GlitchMode.SPORADIC} // glitch mode
+        active // turn on/off the effect (switches between "mode" prop and GlitchMode.DISABLED)
+        ratio={0.85} // Threshold for strong glitches, 0 - no weak glitches, 1 - no strong glitches.
+/>
+      </EffectComposer>
     <Player/>
     <ambientLight intensity={0.5} />
         <spotLight
@@ -134,8 +169,10 @@ export function ArtGallery(){
           intensity={1}
           castShadow
         />
-    <Floor />
-    <Wall 
+    <Floor position={[0,0,0]} rotation={[-Math.PI / 2, 0, 0]}  />
+    <Floor position={[0,5,0]} rotation={[Math.PI/2, 0, 0]} />
+
+        <Wall 
           position={[0, 2.5, -10]} 
           rotation={[0, 0, 0]} 
         />
@@ -147,7 +184,11 @@ export function ArtGallery(){
           position={[10, 2.5, 0]} 
           rotation={[0, -Math.PI / 2, 0]} 
         />
-                <Painting 
+        <Wall 
+          position={[0, 2.5, 10]} 
+          rotation={[0, -Math.PI, 0]} 
+        />
+        <Painting 
           position={[-5, 2.5, -9.9]} 
           color="#ff0000" 
         />
