@@ -40,7 +40,7 @@ export default function Three() {
         <br></br>
         <hr></hr>
         <br></br>
-          <div className="relative w-screen left-[50%] right-[50%] -ml-[50vw] -mr-[50vw]">
+          <div className="relative w-screen left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] ">
         <ArtGallery/>
         </div>
         <br></br>
