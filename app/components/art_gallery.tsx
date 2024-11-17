@@ -132,7 +132,6 @@ const Player = () => {
     friction={0.2}
     mass={1}
     type="dynamic"
-    colliders="capsule"
     linearDamping={0.95}
     angularDamping={0.95}
   >

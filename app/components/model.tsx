@@ -62,7 +62,6 @@ export function ModelSnippet({modelPath}){
                 <Suspense fallback={null}>
                     <CameraSetup />
                     <ambientLight intensity={Math.PI / 2} />
-                    {/* <spotLight position={[30, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI*5} /> */}
                     <pointLight position={[0, 0, 10]} decay={0} intensity={Math.PI*10} />
                     <Model modelPath={modelPath} ></Model>
                     <OrbitControls enablePan={false} enableZoom={true} />
