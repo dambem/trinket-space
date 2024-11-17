@@ -2,12 +2,12 @@
 'use client';
 import React, {useRef, useState, Suspense} from "react";
 import {Mesh} from 'three';
-import { Canvas, useFrame, useLoader, useThree  } from '@react-three/fiber';
+import { Canvas, extend, useFrame, useLoader, useThree  } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { OrthographicCamera, OrbitControls, useProgress } from '@react-three/drei';
+import { Effects, OrthographicCamera, OrbitControls, useProgress, BakeShadows } from '@react-three/drei';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Loader2 } from 'lucide-react';
-
+import {UnrealBloomPass} from 'three-stdlib'
 
 function Model({ modelPath }) {
     const meshRef = useRef<Mesh>(null);
@@ -58,12 +58,15 @@ export function ModelSnippet({modelPath}){
 
     return(
         <div className="w-full h-[300px]">
-            <Canvas style={{height:300}}>
+            <Canvas shadows gl={{antialias: false }} style={{height:300}}>
                 <Suspense fallback={null}>
                     <CameraSetup />
+                    {/* <fog attach="fog" args={['#202030', 10, 25]} /> */}
                     <ambientLight intensity={Math.PI / 2} />
-                    <pointLight position={[0, 0, 10]} decay={0} intensity={Math.PI*10} />
+                    <hemisphereLight intensity={1.2} color='#eaeaea' groundColor='blue' />
+                    <directionalLight castShadow intensity={0.2} shadow-mapSize={[512, 512]}/>
                     <Model modelPath={modelPath} ></Model>
+                    <BakeShadows/>
                     <OrbitControls enablePan={false} enableZoom={true} />
                 </Suspense>
             </Canvas>

@@ -11,6 +11,7 @@ import { ArtGallery } from 'app/components/art_gallery'
 //   description: "My 3D Portfolio",
 // };
 
+
 const ModelGrid = ({ models }) => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-0">
@@ -31,6 +32,7 @@ export default function Three() {
         { title: 'Winchester', path: '3d_models/winchester.glb' },
         { title: 'NYC', path: '3d_models/NYC.glb' },
         { title: 'Malta', path: '3d_models/malta.glb' },
+        { title: 'Wall', path: '3d_models/wall.glb'}
       ];
     
     return (

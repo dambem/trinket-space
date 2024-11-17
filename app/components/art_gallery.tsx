@@ -6,7 +6,7 @@ import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { OrthographicCamera, OrbitControls } from '@react-three/drei';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { PointerLockControls, useTexture } from '@react-three/drei';
+import { PointerLockControls, useTexture, useGLTF } from '@react-three/drei';
 import { Physics, RigidBody, CapsuleCollider } from '@react-three/rapier';
 
 import * as THREE from 'three';
@@ -25,6 +25,31 @@ const keys = {
   KeyA: false,
   KeyD: false,
 };
+
+
+
+function Model({position, rotation, model}) {
+  const { scene } = useGLTF(model) as any
+  const texture = useTexture('photos/3dprints/nyc1.png')
+  
+  // Clone and modify the scene directly
+  const clonedScene = scene.clone()
+  
+  clonedScene.traverse((child) => {
+    console.log("Scene")
+    console.log(child.name)
+    if (child.isMesh && child.name === 'Painting001') {
+      child.material = new THREE.MeshStandardMaterial({
+        map: texture,
+        metalness: 0.5,
+        roughness: 0.5
+      })
+    }
+  })
+
+  return <primitive  position={position} rotation={rotation} object={clonedScene} />
+}
+
 // Custom hook for keyboard controls
 const useKeyboardControls = () => {
   const [movement, setMovement] = useState({
@@ -57,91 +82,6 @@ const useKeyboardControls = () => {
   }, []);
 
   return movement;
-};
-
-const Player = () => {
-  const playerRef = useRef<any>();
-  const controlsRef = useRef<any>();
-  const movement = useKeyboardControls();
-  const {camera} = useThree()
-
-  useEffect(() => {
-    camera.position.set(0, 3, 0);
-    if (controlsRef.current) {
-      const controls = controlsRef.current;
-      
-      const lockPointer = () => {
-        controls.lock();
-      };
-
-      document.addEventListener('click', lockPointer);
-      return () => {
-        document.removeEventListener('click', lockPointer);
-      };
-    }
-  }, []);
-
-  
-  useFrame((state, delta) => {
-    if (!playerRef.current || !controlsRef.current) return;
-
-    const controls = controlsRef.current;
-    const player = playerRef.current;
-
-    if (controls.isLocked){
-      const direction = new THREE.Vector3();
-      const frontVector = new THREE.Vector3();
-      const sideVector = new THREE.Vector3();
-      const rotation = new THREE.Euler(0, 0, 0, 'YXZ');
-
-      rotation.setFromQuaternion(camera.quaternion);
-
-      // Calculate intended movement
-      if (movement.KeyW) frontVector.setZ(-1);
-      if (movement.KeyS) frontVector.setZ(1);
-      if (movement.KeyA) sideVector.setX(1);
-      if (movement.KeyD) sideVector.setX(-1);
-
-      direction
-        .subVectors(frontVector, sideVector)
-        .normalize()
-        .multiplyScalar(MOVEMENT_SPEED * delta);
-
-      direction.applyEuler(new THREE.Euler(0, rotation.y, 0))
-
-      player.setLinvel({
-        x: direction.x * 10,
-        y: 0,
-        z: direction.z * 10
-      })
-      const position = player.translation();
-      camera.position.x = position.x;
-      camera.position.y = 3; // Fixed height
-      camera.position.z = position.z;
-  }
-
-  });
-  return( 
-  <>
-  <PointerLockControls ref={controlsRef} />
-  <RigidBody
-    ref={playerRef}
-    position={[0, 3, 0]}
-    enabledRotations={[false, false, false]}
-    lockRotations={true}
-    friction={0.2}
-    mass={1}
-    type="dynamic"
-    linearDamping={0.95}
-    angularDamping={0.95}
-  >
-  <mesh visible={false}>
-    <capsuleGeometry args={[0.5, 1, 1, 4]} />
-    <meshBasicMaterial wireframe />
-  </mesh>
-  </RigidBody>
-  </>
-);
 };
 
 const Painting = ({ position, rotation = [0.0, 0.0, 0.0], size = [3, 2], color }) => {
@@ -184,9 +124,13 @@ const Floor = ({position, rotation}) => (
 export function ArtGallery(){
     return(
     <div className="h-96">
-      <Canvas className="h-96" shadows>
+      <Canvas className="h-96" shadows gl={{antialias: false }}>
+      <ambientLight intensity={Math.PI / 2} />
+      <directionalLight castShadow intensity={0.2} shadow-mapSize={[1024, 1024]} shadow-bias={-0.0001} position={[0, 0, 0]} />
+
+      <hemisphereLight intensity={0.4} color='#eaeaea' groundColor='blue' />
       <Physics debug>
-      <EffectComposer>
+      {/* <EffectComposer>
           <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} />
           <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
           <Noise opacity={0.05} />
@@ -198,8 +142,7 @@ export function ArtGallery(){
           active // turn on/off the effect (switches between "mode" prop and GlitchMode.DISABLED)
           ratio={1} // Threshold for strong glitches, 0 - no weak glitches, 1 - no strong glitches.
           />
-      </EffectComposer>
-      <Player/>
+      </EffectComposer> */}
       <ambientLight intensity={0.5} />
           <spotLight
             position={[0, 10, 0]}
@@ -207,28 +150,24 @@ export function ArtGallery(){
             intensity={1}
             castShadow
           />
-      <Floor position={[0,0,0]} rotation={[-Math.PI / 2, 0, 0]}  />
-      <Floor position={[0,5,0]} rotation={[Math.PI/2, 0, 0]} />
-          <Wall 
-            position={[0, 2.5, -10]} 
-            rotation={[0, 0, 0]} 
-          />
-          <Wall 
-            position={[-10, 2.5, 0]} 
-            rotation={[0, Math.PI / 2, 0]} 
-          />
-          <Wall 
-            position={[10, 2.5, 0]} 
-            rotation={[0, -Math.PI / 2, 0]} 
-          />
-          <Wall 
-            position={[0, 2.5, 10]} 
-            rotation={[0, -Math.PI, 0]} 
-          />
-          <Painting 
-            position={[-5, 2.5, -9.9]} 
-            color="#ff0000" 
-          />
+      <Model  position={[0, -2.5, 0]} 
+            rotation={[0, 0, 0]}
+            model='3d_models/floor.glb' />
+      <Model  position={[0, 0, 0]} 
+            rotation={[0, Math.PI, 0]}
+            model='3d_models/wall.glb' />
+      <Model  position={[6, 0, -6]} 
+            rotation={[0, Math.PI/2, 0]}
+            model='3d_models/wall.glb' />
+      <Model  position={[6, 0, 6]} 
+            rotation={[0, -Math.PI/2, 0]}
+            model='3d_models/wall.glb' />
+      <Model  position={[12, 0, 0]} 
+            rotation={[0, 0, 0]}
+            model='3d_models/wall.glb' />
+      <OrthographicCamera makeDefault far={100} near={0.1} position={[0, 20, 10]} zoom={10} />
+      <OrbitControls autoRotate enableZoom={true} />
+
       </Physics>
       </Canvas>
     </div>
