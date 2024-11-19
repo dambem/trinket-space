@@ -1,5 +1,5 @@
 'use client';
-import React, {useRef, useState, useEffect} from "react";
+import React, {useRef, useState, useEffect, useContext} from "react";
 import {Mesh, Vector3} from 'three';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -9,7 +9,52 @@ import { Physics, RigidBody, CuboidCollider, type RapierRigidBody } from '@react
 import * as THREE from 'three';
 import { Bloom, DepthOfField, EffectComposer, Glitch, Noise } from "@react-three/postprocessing";
 
+const CameraContext = React.createContext(null);
+
+function CameraController() {
+  const [isOrbital, setIsOrbital] = useState(false);
+  const { camera } = useThree();
+
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key.toLowerCase() === 'c') {
+        setIsOrbital(prev => !prev);
+        
+        // Reset camera position when switching to orbital view
+        if (!isOrbital) {
+          camera.position.set(0, 10, 0);
+          camera.lookAt(0, 0, 0);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [isOrbital, camera]);
+
+  return (
+    <CameraContext.Provider value={isOrbital}>
+      {isOrbital ? (
+        <>
+          <OrthographicCamera
+            makeDefault
+            zoom={50}
+            position={[0, 10, 0]}
+            near={0.1}
+            far={1000}
+          />
+          <OrbitControls />
+        </>
+      ) : null}
+    </CameraContext.Provider>
+  );
+}
+
+
 function Player() {
+  const isOrbital = useContext(CameraContext);
+  if (isOrbital) return; 
+
   const [sub, get] = useKeyboardControls();
   const rigidBodyRef = useRef(null);
   const prevPositionRef = useRef(new Vector3());
@@ -22,6 +67,7 @@ function Player() {
   const PLAYER_SIZE = { width: 0.4, height: 0.9, depth: 0.4 };
 
   useFrame((state, delta) => {
+    if (isOrbital) return; 
     const { forward, backward, left, right } = get();
     const impulse = new Vector3(0, 0, 0);
     
@@ -77,7 +123,7 @@ function Player() {
 
   return (
     <>
-    <PointerLockControls pointerSpeed={0.5} />
+    {!isOrbital && <PointerLockControls pointerSpeed={0.5} />}
     <RigidBody 
       ref={rigidBodyRef}
       type="dynamic"
@@ -158,11 +204,10 @@ export function ArtGallery() {
       ]}
     >
       <div className="h-96">
-        <Canvas className="h-96" shadows gl={{antialias: false}}>
+        <Canvas className="h-96" shadows gl={{antialias: true}}>
           <color attach="background" args={['#202030']} />
             <EffectComposer>
-            <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} />
-            <Bloom />
+            <DepthOfField focusDistance={0} focalLength={0.5} bokehScale={2} height={480} />
             <Noise opacity={0.05} />
             </EffectComposer>
           <ambientLight intensity={Math.PI} />
@@ -177,8 +222,9 @@ export function ArtGallery() {
           
           <Physics  interpolate={true}
   timeStep={1/60} >
-            <Player />
-            
+            <CameraController/>  // Added new controller
+            <Player/>
+
             {/* Floor */}
             <RigidBody type="fixed" friction={1} restitution={0}>
               <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.5, 0]} receiveShadow>
