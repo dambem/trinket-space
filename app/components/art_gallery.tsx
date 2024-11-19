@@ -1,175 +1,248 @@
-// Model component (renamed from Cube and made more generic)
 'use client';
 import React, {useRef, useState, useEffect} from "react";
-import {Mesh} from 'three';
+import {Mesh, Vector3} from 'three';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { OrthographicCamera, OrbitControls } from '@react-three/drei';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { OrthographicCamera, OrbitControls, KeyboardControls, useKeyboardControls } from '@react-three/drei';
 import { PointerLockControls, useTexture, useGLTF } from '@react-three/drei';
-import { Physics, RigidBody, CapsuleCollider } from '@react-three/rapier';
-
+import { Physics, RigidBody, CuboidCollider, type RapierRigidBody } from '@react-three/rapier';
 import * as THREE from 'three';
+import { Bloom, DepthOfField, EffectComposer, Glitch, Noise } from "@react-three/postprocessing";
 
-import { Bloom, DepthOfField, EffectComposer, Noise, Vignette, Glitch } from '@react-three/postprocessing'
-import { GlitchMode } from 'postprocessing'
-import Three from "app/3d/page";
+function Player() {
+  const [sub, get] = useKeyboardControls();
+  const rigidBodyRef = useRef(null);
+  const prevPositionRef = useRef(new Vector3());
+  const velocityRef = useRef(new Vector3());
+  const MOVE_SPEED = 0.1;
+  const LERP_FACTOR = 0.1; // Smoothing factor for camera movement
 
-const MOVEMENT_SPEED = 5;
-const COLLISION_BUFFER = 0.5; // Add a small buffer to prevent getting too close to walls
+  const { camera } = useThree();
 
-const SPEED = 5;
-const keys = {
-  KeyW: false,
-  KeyS: false,
-  KeyA: false,
-  KeyD: false,
-};
+  const PLAYER_SIZE = { width: 0.4, height: 0.9, depth: 0.4 };
 
+  useFrame((state, delta) => {
+    const { forward, backward, left, right } = get();
+    const impulse = new Vector3(0, 0, 0);
+    
+    // Get camera's forward and right vectors
+    const cameraForward = new Vector3(0, 0, -1);
+    const cameraRight = new Vector3(1, 0, 0);
+    
+    // Rotate vectors based on camera rotation
+    cameraForward.applyQuaternion(camera.quaternion);
+    cameraRight.applyQuaternion(camera.quaternion);
+    
+    // Zero out y component to keep movement horizontal
+    cameraForward.y = 0;
+    cameraRight.y = 0;
+    cameraForward.normalize();
+    cameraRight.normalize();
+  
+    // Apply movement based on camera direction
+    if (forward) impulse.add(cameraForward);
+    if (backward) impulse.sub(cameraForward);
+    if (right) impulse.add(cameraRight);
+    if (left) impulse.sub(cameraRight);
+    const api = rigidBodyRef.current as any;
 
+    if (impulse.length() > 0 && rigidBodyRef.current) {
+      impulse.normalize().multiplyScalar(MOVE_SPEED);
+      api.applyImpulse({ x: impulse.x, y: 0, z: impulse.z }, true);
+      api.setLinearDamping(3.0);
+    }
+  
+    if (api) {
+      const playerPosition = api.translation();
+      const currentPosition = new Vector3(playerPosition.x, playerPosition.y, playerPosition.z);
+      
+      // Calculate velocity
+      velocityRef.current.subVectors(currentPosition, prevPositionRef.current).multiplyScalar(1 / delta);
+      
+      // Smooth camera movement using lerp
+      camera.position.lerp(
+        new Vector3(
+          playerPosition.x,
+          playerPosition.y + 1.8,
+          playerPosition.z
+        ),
+        LERP_FACTOR
+      );
+      
+      // Update previous position
+      prevPositionRef.current.copy(currentPosition);
 
-function Model({position, rotation, model}) {
+    }
+  });
+
+  return (
+    <>
+    <PointerLockControls pointerSpeed={0.5} />
+    <RigidBody 
+      ref={rigidBodyRef}
+      type="dynamic"
+      position={[0, 1, 0]}
+      enabledRotations={[false, false, false]}
+      mass={1}
+      lockRotations
+      friction={1}
+      restitution={0}
+    >
+      <mesh castShadow>
+        <boxGeometry args={[PLAYER_SIZE.width, PLAYER_SIZE.height, PLAYER_SIZE.depth]}  />
+        <meshStandardMaterial 
+              transparent={true} 
+              opacity={0.0} 
+            />
+      </mesh>
+    </RigidBody>
+    </>
+  );
+}
+
+function Model({position, rotation,  model, scale}) {
   const { scene } = useGLTF(model) as any
+  const {scene: cityScene}  = useGLTF('3d_models/winchester.glb')
   const texture = useTexture('photos/3dprints/nyc1.png')
-  
-  // Clone and modify the scene directly
   const clonedScene = scene.clone()
-  
+  const rigidBodyRef = useRef(null);
+
+  // Calculate wall dimensions based on your model
   clonedScene.traverse((child) => {
-    console.log("Scene")
-    console.log(child.name)
-    if (child.isMesh && child.name === 'Painting001') {
+    if (child.isMesh){
+    if (child.name === 'Painting001') {
       child.material = new THREE.MeshStandardMaterial({
         map: texture,
         metalness: 0.5,
         roughness: 0.5
       })
     }
+    if (child.name === 'exhibit') {
+      const clonedScene = cityScene.clone()
+
+      // Preserve the original transform of the exhibit
+      clonedScene.position.copy(child.position);
+      clonedScene.position.y -= 0.12
+      clonedScene.rotation.copy(child.rotation);
+      clonedScene.scale.copy(child.scale);
+
+      child.parent.add(clonedScene)
+      child.parent.remove(child)
+    }
+  }
   })
 
-  return <primitive  position={position} rotation={rotation} object={clonedScene} />
+  return (
+    <RigidBody 
+      ref={rigidBodyRef}
+      type="fixed" 
+      position={position} 
+      rotation={rotation}
+      scale={scale}
+      friction={1}
+      restitution={0}
+    >
+      <primitive object={clonedScene} />
+    </RigidBody>
+  );
 }
 
-// Custom hook for keyboard controls
-const useKeyboardControls = () => {
-  const [movement, setMovement] = useState({
-    KeyW: false,
-    KeyS: false,
-    KeyA: false,
-    KeyD: false,
-  });
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (['KeyW', 'KeyS', 'KeyA', 'KeyD'].includes(e.code)) {
-        setMovement(m => ({ ...m, [e.code]: true }));
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (['KeyW', 'KeyS', 'KeyA', 'KeyD'].includes(e.code)) {
-        setMovement(m => ({ ...m, [e.code]: false }));
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
-
-  return movement;
-};
-
-const Painting = ({ position, rotation = [0.0, 0.0, 0.0], size = [3, 2], color }) => {
-    const texture = useTexture('/photos/3dprints/nyc1.png')
-    return (
-      <group position={position} rotation={[0, 0, 0]}>
-        {/* Frame */}
-        <mesh position={[0, 0, 0.1]}>
-          <boxGeometry args={[size[0] + 0.2, size[1] + 0.2, 0.1]} />
-          <meshPhongMaterial color="#444444" />
-        </mesh>
-        {/* Canvas */}
-        <mesh position={[0, 0, 0.2]}>
-          <planeGeometry args={[3,2]} />
-          <meshPhongMaterial map={texture} />
-        </mesh>
-      </group>
-    );
-  };
-
-const Floor = ({position, rotation}) => (
-    // <RigidBody type="fixed" position={position} rotation={rotation}>
-    <mesh position={position} rotation={rotation}>
-      <planeGeometry args={[20, 20]} />
-      <meshPhongMaterial color="#cccccc" />
-    </mesh>
-    // </RigidBody>
-  );
-  
-  const Wall = ({ position, rotation }) => (
-    // <RigidBody colliders="trimesh" type="fixed" friction={0} restitution={0}>
-      <mesh position={position} rotation={rotation}>
-        <planeGeometry args={[20, 10]} />
-        <meshPhongMaterial color="#ffffff" />
-      </mesh>
-    // </RigidBody>
-  );
-  
-
-export function ArtGallery(){
-    return(
-    <div className="h-96">
-      <Canvas className="h-96" shadows gl={{antialias: false }}>
-      <ambientLight intensity={Math.PI / 2} />
-      <directionalLight castShadow intensity={0.2} shadow-mapSize={[1024, 1024]} shadow-bias={-0.0001} position={[0, 0, 0]} />
-
-      <hemisphereLight intensity={0.4} color='#eaeaea' groundColor='blue' />
-      <Physics debug>
-      {/* <EffectComposer>
-          <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} />
-          <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
-          <Noise opacity={0.05} />
-          <Glitch 
-          delay={new THREE.Vector2(5.5, 10.5)} // min and max glitch delay
-          duration={new THREE.Vector2(0.1, 0.2)} // min and max glitch duration
-          strength={new THREE.Vector2(0.8, 1.0)} // min and max glitch strength
-          mode={GlitchMode.SPORADIC} // glitch mode
-          active // turn on/off the effect (switches between "mode" prop and GlitchMode.DISABLED)
-          ratio={1} // Threshold for strong glitches, 0 - no weak glitches, 1 - no strong glitches.
+export function ArtGallery() {
+  return (
+    <KeyboardControls
+      map={[
+        { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
+        { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
+        { name: 'left', keys: ['ArrowLeft', 'KeyA'] },
+        { name: 'right', keys: ['ArrowRight', 'KeyD'] },
+      ]}
+    >
+      <div className="h-96">
+        <Canvas className="h-96" shadows gl={{antialias: false}}>
+          <color attach="background" args={['#202030']} />
+            <EffectComposer>
+            <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} />
+            <Bloom />
+            <Noise opacity={0.05} />
+            </EffectComposer>
+          <ambientLight intensity={Math.PI} />
+          <directionalLight 
+            castShadow 
+            intensity={0.2} 
+            shadow-mapSize={[1024, 1024]} 
+            shadow-bias={-0.0001} 
+            position={[0, 3, 0]} 
           />
-      </EffectComposer> */}
-      <ambientLight intensity={0.5} />
-          <spotLight
-            position={[0, 10, 0]}
-            angle={Math.PI / 4}
-            intensity={1}
-            castShadow
-          />
-      <Model  position={[0, -2.5, 0]} 
-            rotation={[0, 0, 0]}
-            model='3d_models/floor.glb' />
-      <Model  position={[0, 0, 0]} 
-            rotation={[0, Math.PI, 0]}
-            model='3d_models/wall.glb' />
-      <Model  position={[6, 0, -6]} 
-            rotation={[0, Math.PI/2, 0]}
-            model='3d_models/wall.glb' />
-      <Model  position={[6, 0, 6]} 
-            rotation={[0, -Math.PI/2, 0]}
-            model='3d_models/wall.glb' />
-      <Model  position={[12, 0, 0]} 
-            rotation={[0, 0, 0]}
-            model='3d_models/wall.glb' />
-      <OrthographicCamera makeDefault far={100} near={0.1} position={[0, 20, 10]} zoom={10} />
-      <OrbitControls autoRotate enableZoom={true} />
+          <hemisphereLight intensity={0.4} color='#eaeaea' groundColor='blue' />
+          
+          <Physics  interpolate={true}
+  timeStep={1/60} >
+            <Player />
+            
+            {/* Floor */}
+            <RigidBody type="fixed" friction={1} restitution={0}>
+              <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.5, 0]} receiveShadow>
+                <planeGeometry args={[30, 30]} />
+                <meshStandardMaterial color="#666666" />
+              </mesh>
+            </RigidBody>
+            <Model 
+              position={[-3, -1.5, -4]} 
+              rotation={[0, Math.PI/2, 0]}
+              scale={[2,2,2]}
+              model='3d_models/item.glb' 
+            />
+            <Model 
+              position={[3, -1.5, -4]} 
+              rotation={[0, Math.PI/2, 0]}
+              scale={[2,2,2]}
+              model='3d_models/item.glb' 
+            />
+            <Model 
+              position={[3, -1.5, 3]} 
+              rotation={[0, Math.PI/2, 0]}
+              scale={[2,2,2]}
+              model='3d_models/item.glb' 
+            />
+            <Model 
+              position={[-3, -1.5, 3]} 
+              rotation={[0, Math.PI/2, 0]}
+              scale={[2,2,2]}
+              model='3d_models/item.glb' 
+            />
+            {/* Walls */}
+            <Model 
+              position={[-5, 0, 0]} 
+              rotation={[0, Math.PI, 0]}
+              scale={[1,1,1]}
 
-      </Physics>
-      </Canvas>
-    </div>
-    )
+              model='3d_models/wall.glb' 
+            />
+            <Model 
+              position={[1, 0, -6]} 
+              rotation={[0, Math.PI/2, 0]}
+              scale={[1,1,1]}
+
+              model='3d_models/wall.glb' 
+            />
+            <Model 
+              position={[1, 0, 6]} 
+              rotation={[0, -Math.PI/2, 0]}
+              scale={[1,1,1]}
+
+              model='3d_models/wall.glb' 
+            />
+            <Model 
+              position={[7, 0, 0]} 
+              rotation={[0, 0, 0]}
+              scale={[1,1,1]}
+
+              model='3d_models/wall.glb' 
+            />
+            
+          </Physics>
+        </Canvas>
+      </div>
+    </KeyboardControls>
+  );
 }
