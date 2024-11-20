@@ -1,129 +1,171 @@
 'use client';
-import React, {useRef, useState, useEffect, useContext} from "react";
-import {Mesh, Vector3} from 'three';
+import React, {useRef, useState, useEffect, useContext, useCallback} from "react";
+import {Euler, Mesh, Vector3} from 'three';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { OrthographicCamera, OrbitControls, KeyboardControls, useKeyboardControls } from '@react-three/drei';
 import { PointerLockControls, useTexture, useGLTF } from '@react-three/drei';
-import { Physics, RigidBody, CuboidCollider, type RapierRigidBody } from '@react-three/rapier';
+import { Physics, RapierRigidBody, RigidBody, CuboidCollider } from '@react-three/rapier';
 import * as THREE from 'three';
 import { Bloom, DepthOfField, EffectComposer, Glitch, Noise } from "@react-three/postprocessing";
 
-const CameraContext = React.createContext(null);
+const CameraContext = React.createContext({ isOrbital: false, toggleCamera: () => {} });
 
 function CameraController() {
   const [isOrbital, setIsOrbital] = useState(false);
-  const { camera } = useThree();
+  const { camera, gl } = useThree();
+  const lastPositionRef = useRef(new Vector3());
+  const lastRotationRef = useRef(new Euler());
+  const orthoCameraRef = useRef(null);
+
+  const toggleCamera = useCallback(() => {
+    if (isOrbital) {
+      // Restore FPS camera position and rotation
+      camera.position.copy(lastPositionRef.current);
+      camera.rotation.copy(lastRotationRef.current);
+    } else {
+      // Store current camera state before switching to orbital
+      lastPositionRef.current.copy(camera.position);
+      lastRotationRef.current.copy(camera.rotation);
+    }
+    setIsOrbital(!isOrbital);
+  }, [isOrbital, camera]);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.key.toLowerCase() === 'c') {
-        setIsOrbital(prev => !prev);
-        
-        // Reset camera position when switching to orbital view
-        if (!isOrbital) {
-          camera.position.set(0, 10, 0);
-          camera.lookAt(0, 0, 0);
-        }
+        toggleCamera();
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isOrbital, camera]);
+  }, [toggleCamera]);
 
   return (
-    <CameraContext.Provider value={isOrbital}>
+    <CameraContext.Provider value={{ isOrbital, toggleCamera }}>
       {isOrbital ? (
-        <>
-          <OrthographicCamera
-            makeDefault
-            zoom={50}
-            position={[0, 10, 0]}
-            near={0.1}
-            far={1000}
-          />
-          <OrbitControls />
-        </>
-      ) : null}
+        <OrthographicCamera
+          ref={orthoCameraRef}
+          makeDefault
+          zoom={50}
+          position={[0, 10, 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          near={0.1}
+          far={1000}
+        />
+      ) : (
+        <PointerLockControls
+          pointerSpeed={0.7}
+          maxPolarAngle={Math.PI * 0.9}
+          minPolarAngle={Math.PI * 0.1}
+        />
+      )}
     </CameraContext.Provider>
   );
 }
 
-
 function Player() {
-  const isOrbital = useContext(CameraContext);
-  if (isOrbital) return; 
-
+  const { isOrbital } = useContext(CameraContext);
   const [sub, get] = useKeyboardControls();
-  const rigidBodyRef = useRef(null);
+  const rigidBodyRef = useRef<RapierRigidBody>(null);
   const prevPositionRef = useRef(new Vector3());
   const velocityRef = useRef(new Vector3());
-  const MOVE_SPEED = 0.1;
-  const LERP_FACTOR = 0.1; // Smoothing factor for camera movement
+  const movementSmoothing = useRef(new Vector3());
+  
+  const MOVE_SPEED = 0.15;
+  const LERP_FACTOR = 0.15;
+  const DAMPING = 4.0;
+  const BOB_SPEED = 0.015;
+  const BOB_AMOUNT = 0.05;
+  const ACCELERATION = 0.08;
+  const MAX_VELOCITY = 2;
 
   const { camera } = useThree();
-
-  const PLAYER_SIZE = { width: 0.4, height: 0.9, depth: 0.4 };
+  const bobTime = useRef(0);
 
   useFrame((state, delta) => {
-    if (isOrbital) return; 
     const { forward, backward, left, right } = get();
-    const impulse = new Vector3(0, 0, 0);
+    const impulse = new Vector3();
     
-    // Get camera's forward and right vectors
-    const cameraForward = new Vector3(0, 0, -1);
-    const cameraRight = new Vector3(1, 0, 0);
+    // Get camera direction vectors
+    const cameraForward = new Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+    const cameraRight = new Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
     
-    // Rotate vectors based on camera rotation
-    cameraForward.applyQuaternion(camera.quaternion);
-    cameraRight.applyQuaternion(camera.quaternion);
-    
-    // Zero out y component to keep movement horizontal
+    // Keep movement horizontal
     cameraForward.y = 0;
     cameraRight.y = 0;
     cameraForward.normalize();
     cameraRight.normalize();
-  
-    // Apply movement based on camera direction
+
+    // Smooth acceleration
     if (forward) impulse.add(cameraForward);
     if (backward) impulse.sub(cameraForward);
     if (right) impulse.add(cameraRight);
     if (left) impulse.sub(cameraRight);
-    const api = rigidBodyRef.current as any;
 
-    if (impulse.length() > 0 && rigidBodyRef.current) {
-      impulse.normalize().multiplyScalar(MOVE_SPEED);
-      api.applyImpulse({ x: impulse.x, y: 0, z: impulse.z }, true);
-      api.setLinearDamping(3.0);
-    }
-  
-    if (api) {
-      const playerPosition = api.translation();
-      const currentPosition = new Vector3(playerPosition.x, playerPosition.y, playerPosition.z);
-      
-      // Calculate velocity
-      velocityRef.current.subVectors(currentPosition, prevPositionRef.current).multiplyScalar(1 / delta);
-      
-      // Smooth camera movement using lerp
-      camera.position.lerp(
-        new Vector3(
-          playerPosition.x,
-          playerPosition.y + 1.8,
-          playerPosition.z
-        ),
-        LERP_FACTOR
-      );
-      
-      // Update previous position
-      prevPositionRef.current.copy(currentPosition);
+    const api = rigidBodyRef.current;
+    if (!api) return;
 
+    if (impulse.length() > 0) {
+      impulse.normalize();
+      movementSmoothing.current.lerp(impulse.multiplyScalar(MOVE_SPEED), ACCELERATION);
+      
+      if (movementSmoothing.current.length() > MAX_VELOCITY) {
+        movementSmoothing.current.normalize().multiplyScalar(MAX_VELOCITY);
+      }
+      
+      api.applyImpulse({
+        x: movementSmoothing.current.x,
+        y: 0,
+        z: movementSmoothing.current.z
+      }, true);
+    } else {
+      movementSmoothing.current.multiplyScalar(0.95);
     }
+
+    api.setLinearDamping(DAMPING);
+
+    const playerPosition = api.translation();
+    const currentPosition = new Vector3(playerPosition.x, playerPosition.y, playerPosition.z);
+
+    if (isOrbital) {
+      // In orbital mode, camera follows player position while maintaining height and rotation
+      camera.position.x = playerPosition.x;
+      camera.position.z = playerPosition.z;
+    } else {
+      // FPS camera movement with head bobbing
+      const velocity = velocityRef.current.subVectors(currentPosition, prevPositionRef.current).length();
+      
+      if (velocity > 0.01) {
+        bobTime.current += delta * BOB_SPEED * velocity;
+        const bobOffset = Math.sin(bobTime.current * Math.PI * 2) * BOB_AMOUNT;
+        
+        camera.position.lerp(
+          new Vector3(
+            playerPosition.x,
+            playerPosition.y + 1.8 + bobOffset,
+            playerPosition.z
+          ),
+          LERP_FACTOR
+        );
+      } else {
+        camera.position.lerp(
+          new Vector3(
+            playerPosition.x,
+            playerPosition.y + 1.8,
+            playerPosition.z
+          ),
+          LERP_FACTOR
+        );
+        bobTime.current = 0;
+      }
+    }
+
+    prevPositionRef.current.copy(currentPosition);
   });
 
   return (
-    <>
-    {!isOrbital && <PointerLockControls pointerSpeed={0.5} />}
     <RigidBody 
       ref={rigidBodyRef}
       type="dynamic"
@@ -135,16 +177,13 @@ function Player() {
       restitution={0}
     >
       <mesh castShadow>
-        <boxGeometry args={[PLAYER_SIZE.width, PLAYER_SIZE.height, PLAYER_SIZE.depth]}  />
-        <meshStandardMaterial 
-              transparent={true} 
-              opacity={0.0} 
-            />
+        <boxGeometry args={[0.4, 0.9, 0.4]} />
+        <meshStandardMaterial transparent opacity={isOrbital ? 0.5 : 0.0} />
       </mesh>
     </RigidBody>
-    </>
   );
 }
+
 
 function Model({position, rotation,  model, scale}) {
   const { scene } = useGLTF(model) as any
