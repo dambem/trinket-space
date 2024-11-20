@@ -48,11 +48,9 @@ function CameraController() {
         <OrthographicCamera
           ref={orthoCameraRef}
           makeDefault
-          zoom={50}
-          position={[0, 10, 0]}
-          rotation={[-Math.PI / 2, 0, 0]}
-          near={0.1}
-          far={1000}
+          zoom={20}
+          position={[0, 200, 200]}
+          rotation={[-Math.PI /4, 0, 0]}
         />
       ) : (
         <PointerLockControls
