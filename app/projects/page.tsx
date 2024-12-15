@@ -18,41 +18,39 @@ export default async function Projects() {
   const projects = await client.fetch(projects_QUERY, {}, options);
   
   return (
-    <section className="w-full">
-      <h1 className="mb-8 text-2xl font-medium tracking-tight">Projects</h1>
+    <section className="w-full px-4 md:px-6">
+      <h1 className="mb-8 text-2xl font-medium tracking-tight">projects</h1>
       
-      <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-6">
         {projects.map((project, index) => (
           <a
             key={index}
             href={project.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block group"
+            className="group rounded  drop-shadow-md border border-stone-400  block bg-white dark:bg-stone-950 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
           >
-            <div className="flex flex-col space-y-4">
-              <div className="flex justify-between items-baseline">
-                <span className="font-medium tracking-tight">
+            <div className="relative aspect-video">
+              <img 
+                src={project.imageUrl} 
+                alt={project.title}
+                className="absolute inset-0 w-full h-full object-cover transition-all duration-300 grayscale group-hover:grayscale-0 transform group-hover:scale-105"
+              />
+            </div>
+            
+            <div className="p-4">
+              <div className="flex justify-between items-baseline mb-3">
+                <h2 className="font-medium  text-yellow-200 tracking-tight truncate">
                   {project.title}
-                </span>
-                <span className="text-zinc-500 dark:text-zinc-400 text-xs tabular-nums">
+                </h2>
+                <span className="text-zinc-500 dark:text-zinc-400 text-xs tabular-nums shrink-0 ml-2">
                   {project.year}
                 </span>
               </div>
               
-              <div className="w-full">
-                <div className="relative h-48 mb-4 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                  <img 
-                    src={project.imageUrl} 
-                    alt={project.title}
-                    className="object-cover w-full h-full transition-all duration-300 grayscale hover:grayscale-0"
-                  />
-                </div>
-                
-                <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                  {project.description}
-                </p>
-              </div>
+              <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed line-clamp-3">
+                {project.description}
+              </p>
             </div>
           </a>
         ))}

@@ -52,15 +52,15 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
               placeholder="search posts..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-950 py-2 pl-10 pr-4 text-sm text-gray-50 dark:text-gray-50 placeholder:text-gray-50 dark:placeholder:text-gray-400 focus:border-neutral-900 dark:focus:border-neutral-100 focus:outline-none focus:ring-0 transition-colors duration-200"
+              className="w-full rounded border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-950 py-2 pl-10 pr-4 text-sm text-gray-50 dark:text-gray-50 placeholder:text-gray-50 dark:placeholder:text-gray-400 focus:border-neutral-900 dark:focus:border-neutral-100 focus:outline-none focus:ring-0 transition-colors duration-200"
             />
           </div>
-          <div className="relative min-w-[100px]">
+          <div className=" relative min-w-[100px]">
 
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="w-full appearance-none border border-neutral-200 dark:border-neutral-600 dark:bg-neutral-950 py-2 pl-5 pr-6 text-sm text-yellow-900 dark:text-gray-50 focus:border-neutral-900 dark:focus:border-neutral-100 focus:outline-none focus:ring-0 transition-colors duration-200"
+            className="w-full rounded appearance-none border border-neutral-200 dark:border-neutral-600 dark:bg-neutral-950 py-2 pl-5 pr-6 text-sm text-yellow-900 dark:text-gray-50 focus:border-neutral-900 dark:focus:border-neutral-100 focus:outline-none focus:ring-0 transition-colors duration-200"
           >
             {postTypes.map((type) => (
               <option key={type} value={type}>
@@ -74,7 +74,7 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
       <div>
         <ul>
           {filteredPosts.map((post) => (
-            <article className="border-t border-white-500 pt-6 hover:bg-gray-800 transition p-6 -mx-6">
+            <article className="pt-1 pb-1  rounded-xl hover:bg-stone-950 transition p-4 -mx-4">
 
             <li key={post._id}>
               <Link
@@ -86,7 +86,7 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
                     {post.name}
                   </p>
   
-                  <span className="rounded-md bg-yellow-300 px-2 py-1 text-xs font-medium text-neutral-900 ring-1 ring-inset ring-gray-500/10">
+                  <span className="rounded bg-yellow-300 px-2 py-1 text-xs font-medium text-neutral-900 ring-1 ring-inset ring-gray-500/10">
                     {post.type}
                   </span>
                 </div>
