@@ -5,6 +5,7 @@ import Link from "next/link";
 import { formatDate } from './dateformat';
 import { calculateReadingTime } from './reading';
 import { Search, Filter } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Post {
   _id: string;
@@ -38,6 +39,9 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
   }, [posts, query, selectedType]);
 
   return (
+        <motion.div 
+        layout
+      >
     <section>
 
       <div className="flex justify-between items-center mb-4">
@@ -74,8 +78,19 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
       <div>
         <ul>
           {filteredPosts.map((post) => (
-            <article className="pt-1 pb-1  rounded-xl hover:bg-stone-950 transition p-4 -mx-4">
 
+            <article className="pt-1 pb-1  rounded-xl hover:bg-stone-950 transition p-4 -mx-4">
+                          <motion.div
+                          layout
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          transition={{ 
+                            duration: 0.2,
+                            layout: { duration: 0.3 }
+                          }}
+                          className=""
+                        >
             <li key={post._id}>
               <Link
                 className="flex flex-col space-y-1 mb-4 transition-opacity duration-200 hover:opacity-80"
@@ -86,7 +101,7 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
                     {post.name}
                   </p>
   
-                  <span className="rounded bg-yellow-300 px-2 py-1 text-xs font-medium text-neutral-900 ring-1 ring-inset ring-gray-500/10">
+                  <span className=" bg-yellow-300 px-2 py-1 text-xs font-medium text-neutral-900 ring-1 ring-inset ring-gray-500/10">
                     {post.type}
                   </span>
                 </div>
@@ -103,6 +118,8 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
                 </div>
               </Link>
             </li>
+            </motion.div>
+
             </article>
           ))}
         </ul>
@@ -111,5 +128,6 @@ export default function BlogPostsClient({ posts }: BlogPostsClientProps) {
         )}
       </div>
     </section>
+    </motion.div>
   );
 }

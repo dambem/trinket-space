@@ -6,6 +6,7 @@ import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import Masonry from 'react-masonry-css';
 
+import { motion, AnimatePresence } from 'framer-motion';
 
 const masonryStyles = `
 .my-masonry-grid {
@@ -36,6 +37,9 @@ export const ImageGrid = ({ images }) => {
     640: 1      // xs screens
   };
   return (
+    <motion.div 
+    layout
+  >
     <PhotoProvider>
       <style>{masonryStyles}</style>
       <Masonry
@@ -45,6 +49,18 @@ export const ImageGrid = ({ images }) => {
       >
         {images.map((image, index) => (
           <div key={index} className="mb-4">
+              <motion.div
+              key={image.src}
+              layout
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ 
+                duration: 0.2,
+                layout: { duration: 0.3 }
+              }}
+              className=""
+            >
             <Image
               src={image.src}
               alt={image.alt}
@@ -57,9 +73,11 @@ export const ImageGrid = ({ images }) => {
                 objectFit: 'cover',
               }}
             />
+            </motion.div>
           </div>
         ))}
       </Masonry>
     </PhotoProvider>
+    </motion.div>
   );
 };
