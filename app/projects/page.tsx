@@ -28,7 +28,7 @@ export default async function Projects() {
             href={project.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group rounded  drop-shadow-md border border-stone-400  block bg-transparent	 overflow-hidden shadow-sm hover:shadow-md hover:bg-gray-950 transition-shadow duration-300"
+            className="group rounded  drop-shadow-md  block bg-transparent	 overflow-hidden shadow-sm hover:shadow-md hover:bg-gray-950 transition-shadow duration-300"
           >
             <div className="relative aspect-video">
               <img 
