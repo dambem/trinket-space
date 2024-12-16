@@ -24,7 +24,16 @@
 
 /* Dark theme colors */
 .dark {
-  background-image: linear-gradient(to left top, #170710, #13050c, #0e0307, #080203, #000000);  --sh-string: #0fa295;
+  background-image: 
+    /* Noise texture overlay */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 1000 1000' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
+    /* Your original gradient */
+    linear-gradient(to left top, #170710, #13050c, #0e0307, #080203, #000000);
+  
+  /* Add blend mode and opacity for the noise texture */
+  background-blend-mode:soft-light, normal;
+  /* Add blend mode and opacity for the noise texture */
+  background-size:  auto, auto;
   --sh-keyword: #f47067;
   --sh-comment: #a19595;
   --sh-jsxliterals: #6266d1;
@@ -32,6 +41,48 @@
   --sh-entity: #e25a1c;
 }
 
+
+.dark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('holographictexture.jpg');
+  background-size: cover;
+  opacity: 0.3;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  /* Rectangular fade */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 20%,
+    black 80%,
+    transparent
+  ),
+  linear-gradient(
+    to bottom,
+    transparent,
+    black 20%,
+    black 80%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 20%,
+    black 80%,
+    transparent
+  ),
+  linear-gradient(
+    to bottom,
+    transparent,
+    black 20%,
+    black 80%,
+    transparent
+  );
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
+}
 html {
   min-width: 360px;
 }

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import Masonry from 'react-masonry-css';
+import { X, ZoomIn, Info } from 'lucide-react';
 
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -61,6 +62,8 @@ export const ImageGrid = ({ images }) => {
               }}
               className=""
             >
+            <PhotoView src={image.src}>
+            <div className="cursor-zoom-in">
             <Image
               src={image.src}
               alt={image.alt}
@@ -73,6 +76,8 @@ export const ImageGrid = ({ images }) => {
                 objectFit: 'cover',
               }}
             />
+            </div>
+            </PhotoView>
             </motion.div>
           </div>
         ))}
