@@ -2,6 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import { defineQuery } from "next-sanity";
 import { client } from "app/sanity/client";
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const metadata: Metadata = {
   title: "Projects",

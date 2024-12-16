@@ -39,16 +39,10 @@ export default function Three() {
         <div className="container mx-auto px-4 py-8">
 
         <h2 className="text-3xl font-bold mb-8">3D Model Gallery</h2>
-        <br></br>
-        <hr></hr>
-        <br></br>
           <div className="relative w-screen left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] ">
         <ArtGallery/>
         </div>
-        <br></br>
-        <hr></hr>
-
-        <ModelGrid models={modelData} />
+        {/* <ModelGrid models={modelData} /> */}
         </div>
   
       )

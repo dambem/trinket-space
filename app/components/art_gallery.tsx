@@ -7,12 +7,12 @@ import { OrthographicCamera, OrbitControls, KeyboardControls, useKeyboardControl
 import { PointerLockControls, useTexture, useGLTF } from '@react-three/drei';
 import { Physics, RapierRigidBody, RigidBody, CuboidCollider } from '@react-three/rapier';
 import * as THREE from 'three';
-import { Bloom, DepthOfField, EffectComposer, Glitch, Noise } from "@react-three/postprocessing";
+import { Bloom, DepthOfField, EffectComposer, Glitch, Noise, ToneMapping } from "@react-three/postprocessing";
 
-const CameraContext = React.createContext({ isOrbital: false, toggleCamera: () => {} });
+const CameraContext = React.createContext({ isOrbital: true, toggleCamera: () => {} });
 
 function CameraController() {
-  const [isOrbital, setIsOrbital] = useState(false);
+  const [isOrbital, setIsOrbital] = useState(true);
   const { camera, gl } = useThree();
   const lastPositionRef = useRef(new Vector3());
   const lastRotationRef = useRef(new Euler());
@@ -232,43 +232,60 @@ function Model({position, rotation,  model, scale}) {
 
 export function ArtGallery() {
   return (
-    <KeyboardControls
-      map={[
-        { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
-        { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
-        { name: 'left', keys: ['ArrowLeft', 'KeyA'] },
-        { name: 'right', keys: ['ArrowRight', 'KeyD'] },
-      ]}
-    >
-      <div className="h-96">
-        <Canvas className="h-96" shadows gl={{antialias: true}}>
-          <color attach="background" args={['#202030']} />
+      <div className="h-dvh	">
+        <Canvas className="h-dvh" shadows gl={{antialias: true}}>
             <EffectComposer>
-            <DepthOfField focusDistance={0} focalLength={0.5} bokehScale={2} height={480} />
             <Noise opacity={0.05} />
-            </EffectComposer>
-          <ambientLight intensity={Math.PI} />
+            <Bloom 
+              intensity={0.2}
+              luminanceThreshold={0.9}
+              luminanceSmoothing={0.9}
+            />
+            <ToneMapping 
+              mode={THREE.ACESFilmicToneMapping}
+            />
+          </EffectComposer>
+          <ambientLight intensity={0.5} />
           <directionalLight 
             castShadow 
-            intensity={0.2} 
-            shadow-mapSize={[1024, 1024]} 
-            shadow-bias={-0.0001} 
-            position={[0, 3, 0]} 
+            intensity={1.5} // Increased from 0.2
+            shadow-mapSize={[2048, 2048]} // Increased resolution
+            shadow-bias={-0.0001}
+            position={[10, 10, 10]} // Moved to create more dramatic shadows
+            shadow-camera-far={50}
+            shadow-camera-near={1}
+            shadow-camera-left={-10}
+            shadow-camera-right={10}
+            shadow-camera-top={10}
+            shadow-camera-bottom={-10}
           />
-          <hemisphereLight intensity={0.4} color='#eaeaea' groundColor='blue' />
-          
-          <Physics  interpolate={true}
-  timeStep={1/60} >
-            <CameraController/>  // Added new controller
-            <Player/>
+           <spotLight
+            castShadow
+            intensity={2}
+            angle={Math.PI / 4}
+            position={[0, 10, 0]}
+            shadow-mapSize={[1024, 1024]}
+            shadow-bias={-0.0001}
+          />
+          <hemisphereLight intensity={0.3} color='#eaeaea' groundColor='blue' />
+          <pointLight 
+            intensity={0.8} 
+            position={[-3, 2, -4]} 
+            color="#ff7f00"
+            distance={10}
+            decay={2}
+          />
 
+          <pointLight 
+            intensity={0.8} 
+            position={[3, 2, 4]} 
+            color="#7f7fff"
+            distance={10}
+            decay={2}
+          />
+          <Physics  interpolate={true}timeStep={1/60} >
+            <CameraController/>  // Added new controller
             {/* Floor */}
-            <RigidBody type="fixed" friction={1} restitution={0}>
-              <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.5, 0]} receiveShadow>
-                <planeGeometry args={[30, 30]} />
-                <meshStandardMaterial color="#666666" />
-              </mesh>
-            </RigidBody>
             <Model 
               position={[-3, -1.5, -4]} 
               rotation={[0, Math.PI/2, 0]}
@@ -322,10 +339,8 @@ export function ArtGallery() {
 
               model='3d_models/wall.glb' 
             />
-            
           </Physics>
         </Canvas>
       </div>
-    </KeyboardControls>
   );
 }
