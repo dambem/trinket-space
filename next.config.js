@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['react-photo-view'],
   reactStrictMode: true,
   swcMinify: true,
   images: {
