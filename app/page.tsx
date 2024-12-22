@@ -18,6 +18,11 @@ function SocialLink({ href, icon: Icon }) {
 export default function Page() {
   return (
     <section>
+
+
+      <h1 className="text-2xl font-medium tracking-tight title">
+        lamplight - a small portfolio
+      </h1>
       <a href={socialLinks.github} target="_blank">
         <Image
           src="/avatar.png"
@@ -29,12 +34,6 @@ export default function Page() {
           priority
         />
       </a>
-
-      <h1 className="mb-8 text-2xl font-medium tracking-tight">
-        lamplight - a small portfolio
-      </h1>
-      <hr></hr>
-
       <div className="prose prose-neutral dark:prose-invert">
       <p>
         Currently, I'm a software engineer at <Link href="https://ada-mode.com/">

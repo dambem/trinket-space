@@ -20,8 +20,33 @@
   --sh-jsxliterals: #6266d1;
   --sh-property: #e25a1c;
   --sh-entity: #e25a1c;
+  overflow-x: hidden;
+
+}
+.title {
+  display: inline-block;
+  position: relative;
+  z-index: 1;
+}
+.title::before,
+.title::after {
+  content: '';
+  position: absolute;
+  height: 1px;
+  background: white;
+  top: 50%;
+  width: 100vw;
 }
 
+.title::before {
+  right: 100%;
+  margin-right: 20px;
+}
+
+.title::after {
+  left: 100%;
+  margin-left: 20px;
+}
 /* Dark theme colors */
 .dark {
   background-image: 

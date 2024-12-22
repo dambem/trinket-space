@@ -30,8 +30,8 @@ export default function ImageReact() {
   return (
     <section>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-medium tracking-tight">photos</h1>
-        <div className="flex ml-10 space-x-4">
+        <h1 className="text-2xl font-medium tracking-tight title">photos</h1>
+        <div className="flex ml-10 z-10 space-x-4">
           <div  className="relative flex-grow">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-gray-50">
               <Search size={18} />

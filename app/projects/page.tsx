@@ -20,7 +20,7 @@ export default async function Projects() {
   
   return (
     <section className="w-full px-4 md:px-6">
-      <h1 className="mb-8 text-2xl font-medium tracking-tight">projects</h1>
+      <h1 className="mb-8 text-2xl font-medium tracking-tight title">projects</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-6">
         {projects.map((project, index) => (
@@ -29,7 +29,7 @@ export default async function Projects() {
             href={project.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group rounded  drop-shadow-md  block bg-transparent	 overflow-hidden shadow-sm hover:shadow-md hover:bg-gray-950 transition-shadow duration-300"
+            className="group rounded  drop-shadow-md  block bg-transparent	 overflow-hidden shadow-sm hover:shadow-md hover:bg-stone-950 transition-shadow duration-300"
           >
             <div className="relative aspect-video">
               <img 
