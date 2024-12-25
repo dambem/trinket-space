@@ -17,6 +17,8 @@ export default function ImageReact() {
         { src: "/photos/opera.png", alt: "Sacré-Cœur Basilica" },
         { src: "/photos/3dprints/winchester1.png", alt: "Eiffel Tower" },
         { src: "/photos/3dprints/winchester7.png", alt: "Taj Mahal" },
+        { src: "/photos/hexagon.png", alt: "Canary Wharf" },
+        { src: "/photos/sheffield.jpg", alt: "Canary Wharf" },
         { src: "/photos/photo7.png", alt: "Canary Wharf" },
         { src: "/photos/self-checkout.png", alt: "Big Ben" },
         { src: "/photos/selfcheckoutd.png", alt: "Big Ben" },

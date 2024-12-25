@@ -24,6 +24,7 @@ export default function Page() {
         lamplight - a small portfolio
       </h1>
       <a href={socialLinks.github} target="_blank">
+        <br></br>
         <Image
           src="/avatar.png"
           alt="Profile photo"

@@ -18,48 +18,14 @@ function CameraController() {
   const lastRotationRef = useRef(new Euler());
   const orthoCameraRef = useRef(null);
 
-  const toggleCamera = useCallback(() => {
-    if (isOrbital) {
-      // Restore FPS camera position and rotation
-      camera.position.copy(lastPositionRef.current);
-      camera.rotation.copy(lastRotationRef.current);
-    } else {
-      // Store current camera state before switching to orbital
-      lastPositionRef.current.copy(camera.position);
-      lastRotationRef.current.copy(camera.rotation);
-    }
-    setIsOrbital(!isOrbital);
-  }, [isOrbital, camera]);
-
-  useEffect(() => {
-    const handleKeyPress = (event) => {
-      if (event.key.toLowerCase() === 'c') {
-        toggleCamera();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [toggleCamera]);
-
   return (
-    <CameraContext.Provider value={{ isOrbital, toggleCamera }}>
-      {isOrbital ? (
         <OrthographicCamera
           ref={orthoCameraRef}
           makeDefault
-          zoom={20}
-          position={[0, 200, 200]}
-          rotation={[-Math.PI /4, 0, 0]}
+          zoom={40}
+          position={[0, 10, 10]}
+          rotation={[-0.8, 0, 0]}
         />
-      ) : (
-        <PointerLockControls
-          pointerSpeed={0.7}
-          maxPolarAngle={Math.PI * 0.9}
-          minPolarAngle={Math.PI * 0.1}
-        />
-      )}
-    </CameraContext.Provider>
   );
 }
 
@@ -325,13 +291,7 @@ export function ArtGallery() {
 
               model='3d_models/wall.glb' 
             />
-            <Model 
-              position={[1, 0, 6]} 
-              rotation={[0, -Math.PI/2, 0]}
-              scale={[1,1,1]}
 
-              model='3d_models/wall.glb' 
-            />
             <Model 
               position={[7, 0, 0]} 
               rotation={[0, 0, 0]}
