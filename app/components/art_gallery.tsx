@@ -3,13 +3,15 @@ import React, {useRef, useState, useEffect, useContext, useCallback} from "react
 import {Euler, Mesh, Vector3} from 'three';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { OrthographicCamera, OrbitControls, KeyboardControls, useKeyboardControls } from '@react-three/drei';
-import { PointerLockControls, useTexture, useGLTF } from '@react-three/drei';
+import { OrthographicCamera, OrbitControls, KeyboardControls, useKeyboardControls, SpotLight } from '@react-three/drei';
+import { PointerLockControls, useTexture, useGLTF, useHelper } from '@react-three/drei';
 import { Physics, RapierRigidBody, RigidBody, CuboidCollider } from '@react-three/rapier';
 import * as THREE from 'three';
-import { Bloom, DepthOfField, EffectComposer, Glitch, Noise, ToneMapping } from "@react-three/postprocessing";
+import { Bloom, DepthOfField, EffectComposer, Glitch, Noise, ToneMapping, N8AO, TiltShift2 } from "@react-three/postprocessing";
 import { OrbitControls as DreiOrbitControls } from '@react-three/drei'
 import { GUI } from 'lil-gui'
+import { useControls } from 'leva'
+
 
 
 const CameraContext = React.createContext({ isOrbital: true, toggleCamera: () => {} });
@@ -62,24 +64,61 @@ function Model({position, rotation,  model, scale, controlsRef}) {
   );
 } 
 
+
 export function ArtGallery() {
   const orthoCameraRef = useRef(null);
   const controlsRef = useRef(null);
-  return (
-      <div className="h-dvh	">
-        <Canvas className="h-dvh" shadows gl={{antialias: true}} eventlayer>
-            <EffectComposer>
-            <Noise opacity={0.05} />
+  const spotRef = useRef();
 
-            <ToneMapping 
-              mode={THREE.ACESFilmicToneMapping}
-            />
+  useControls('Spot Light', {
+    visible: {
+      value: false,
+      onChange: (v) => {
+      },
+    },
+    position: {
+      x: 3,
+      y: 2.5,
+      z: 1,
+      onChange: (v) => {
+      },
+    },
+    color: {
+      value: 'white',
+      onChange: (v) => {
+      },
+    },
+  })
+
+  return (
+      <div className="h-dvh	mt-2">
+        <Canvas className="h-dvh" shadows 
+        onCreated={(state) => {
+          state.gl.toneMappingExposure  = 0.1,
+          state.gl.toneMapping = THREE.ACESFilmicToneMapping 
+        }}
+        gl={{antialias: true,
+              shadowMap: {
+                type: THREE.PCFSoftShadowMap,
+                enabled: true
+          }}} eventlayer>
+            <EffectComposer>
+
+            <N8AO aoRadius={50} distanceFalloff={0.2} intensity={6} screenSpaceRadius halfRes />
+            <ToneMapping>
+
+            </ToneMapping>
+            {/* <DepthOfField focusDistance={1} focalLength={0.02} bokehScale={2} height={480} /> */}
+            {/* <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} /> */}
+            <Noise opacity={0.02} />
           </EffectComposer>
+
           <OrbitControls 
           ref={controlsRef} 
           enableZoom={true}
           minDistance={10}
           maxDistance={100}
+          maxPolarAngle={Math.PI/2-0.2}
           enablePan={false}
           autoRotate={false}
           target={[0, 0, 0]}
@@ -91,18 +130,22 @@ export function ArtGallery() {
           zoom={30}
           position={[50, 50, 50]}
           />
-          <ambientLight intensity={4} />
 
-           <spotLight
-            castShadow
-            intensity={20}
-            angle={0}
-            position={[0, 2, 0]}
-            shadow-mapSize={[1024, 1024]}
-            shadow-bias={-0.0001}
+
+          <hemisphereLight args={[0xffffff, 0x8d8d8d, 1]}
           />
-          <hemisphereLight intensity={0.5} color='#eaeaea' groundColor='blue' />
 
+          
+          <SpotLight ref={spotRef} args={[0xffffff, 500]}
+            position={[3,3,3]}  
+            attenuation={20}
+            angle={Math.PI/6}
+            decay={2}
+            penumbra={1}
+            distance = {10}
+            intensity={10}
+            castShadow  
+          />
           <Physics  interpolate={true}timeStep={1/60} >
             {/* Floor */}
             <Model 
@@ -112,6 +155,11 @@ export function ArtGallery() {
               model='3d_models/item.glb' 
               controlsRef={controlsRef}
             />
+
+            <mesh position={[0, -2.5, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[5, 5, 5]}>
+              <planeGeometry args={[200, 200]} />
+              <meshLambertMaterial color="0xbcbcbc"  />
+            </mesh>
             <Model 
               position={[4, -1.5, -3]} 
               rotation={[0, Math.PI/4, 0]}
