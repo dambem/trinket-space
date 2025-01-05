@@ -35,7 +35,7 @@ export default function Page() {
           priority
         />
       </a>
-      <div className="prose prose-neutral dark:prose-invert">
+      <div className="prose prose-neutral dark:prose-invert max-w-prose">
       <p>
         Currently, I'm a software engineer at <Link href="https://ada-mode.com/">
           AdaMode

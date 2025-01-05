@@ -69,7 +69,6 @@
 
 .dark::before {
   content: '';
-  position: absolute;
   inset: 0;
   background-image: url('holographictexture.jpg');
   background-size: cover;
@@ -105,8 +104,7 @@
     black 80%,
     transparent
   );
-  mask-composite: intersect;
-  -webkit-mask-composite: source-in;
+
 }
 html {
   min-width: 360px;

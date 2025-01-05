@@ -8,6 +8,8 @@ module.exports = {
         ale:  ["var(--font-afacad-sans)"],
         sans: ["var(--font-geist-sans)"],
         mono: ["var(--font-geist-mono)"],
+        'custom-mono': ['MonaspaceArgon', 'monospace'],
+
       },
       typography: {
         quoteless: {
