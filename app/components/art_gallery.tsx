@@ -70,38 +70,13 @@ export function ArtGallery() {
   const controlsRef = useRef(null);
   const spotRef = useRef();
 
-  useControls('Spot Light', {
-    visible: {
-      value: false,
-      onChange: (v) => {
-      },
-    },
-    position: {
-      x: 3,
-      y: 2.5,
-      z: 1,
-      onChange: (v) => {
-      },
-    },
-    color: {
-      value: 'white',
-      onChange: (v) => {
-      },
-    },
-  })
-
   return (
       <div className="h-dvh	mt-2">
         <Canvas className="h-dvh" shadows 
         onCreated={(state) => {
           state.gl.toneMappingExposure  = 0.1,
           state.gl.toneMapping = THREE.ACESFilmicToneMapping 
-        }}
-        gl={{antialias: true,
-              shadowMap: {
-                type: THREE.PCFSoftShadowMap,
-                enabled: true
-          }}} eventlayer>
+        }}>
             <EffectComposer>
 
             <N8AO aoRadius={50} distanceFalloff={0.2} intensity={6} screenSpaceRadius halfRes />
@@ -136,7 +111,7 @@ export function ArtGallery() {
           />
 
           
-          <SpotLight ref={spotRef} args={[0xffffff, 500]}
+          <SpotLight args={[0xffffff, 500]}
             position={[3,3,3]}  
             attenuation={20}
             angle={Math.PI/6}
