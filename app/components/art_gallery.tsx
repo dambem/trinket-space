@@ -3,7 +3,7 @@ import React, {useRef, useState, useEffect, useContext, useCallback} from "react
 import {Euler, Mesh, Vector3} from 'three';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { OrthographicCamera, OrbitControls, KeyboardControls, useKeyboardControls, SpotLight } from '@react-three/drei';
+import { OrthographicCamera, OrbitControls, GradientTexture, KeyboardControls, useKeyboardControls, SpotLight } from '@react-three/drei';
 import { PointerLockControls, useTexture, useGLTF, useHelper } from '@react-three/drei';
 import { Physics, RapierRigidBody, RigidBody, CuboidCollider } from '@react-three/rapier';
 import * as THREE from 'three';
@@ -25,6 +25,7 @@ function Model({position, rotation,  model, scale, controlsRef}) {
 
   // Calculate wall dimensions based on your model
   clonedScene.traverse((child) => {
+
     if (child.isMesh){
     if (child.name === 'Painting001') {
       child.material = new THREE.MeshStandardMaterial({
@@ -33,6 +34,10 @@ function Model({position, rotation,  model, scale, controlsRef}) {
         roughness: 0.5
       })
 
+    }
+    else {
+      child.castShadow = true
+      child.receiveShadow = true
     }
     if (child.name === 'exhibit') {
       const clonedScene = cityScene.clone()
@@ -59,7 +64,7 @@ function Model({position, rotation,  model, scale, controlsRef}) {
       friction={1}
       restitution={0}
     >
-      <primitive object={clonedScene} />
+      <primitive object={clonedScene} castShadow receiveShadow/>
     </RigidBody>
   );
 } 
@@ -107,58 +112,46 @@ export function ArtGallery() {
           />
 
 
-          <hemisphereLight args={[0xffffff, 0x8d8d8d, 1]}
+          <hemisphereLight args={[0xffffff, 0x8d8d8d, 3]}
+          />
+
+          <directionalLight args={[0xffffff, 5]} 
+            position={[3,3,0]}
+            castShadow
           />
 
           
-          <SpotLight args={[0xffffff, 500]}
+          {/* <SpotLight args={[0xffffff, 500]}
             position={[3,3,3]}  
             attenuation={20}
             angle={Math.PI/6}
             decay={2}
             penumbra={1}
-            distance = {10}
-            intensity={10}
+            distance = {20}
+            intensity={30}
             castShadow  
-          />
+          /> */}
           <Physics  interpolate={true}timeStep={1/60} >
             {/* Floor */}
             <Model 
-              position={[-3, -1.5, -3]} 
-              rotation={[0, Math.PI/4, 0]}
-              scale={[2,2,2]}
+              position={[0, -1.5, 0]} 
+              rotation={[0, Math.PI*3/4, 0]}
+              scale={[4,4,4]}
               model='3d_models/item.glb' 
               controlsRef={controlsRef}
             />
 
-            <mesh position={[0, -2.5, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[5, 5, 5]}>
-              <planeGeometry args={[200, 200]} />
-              <meshLambertMaterial color="0xbcbcbc"  />
+            <mesh position={[0, -2.5, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[5, 2, 5]} castShadow receiveShadow>
+              <planeGeometry args={[200, 10]} />
+              <meshStandardMaterial>
+
+              <GradientTexture 
+                stops={[0, 0.5]} // Position of color stops
+                colors={['#f9dde7', '#dde7f9']} // Pastel pink to pastel blue
+                size={1024} // Resolution of the gradient texture
+              />          
+              </meshStandardMaterial>  
             </mesh>
-            <Model 
-              position={[4, -1.5, -3]} 
-              rotation={[0, Math.PI/4, 0]}
-              scale={[2,2,2]}
-              model='3d_models/item.glb' 
-              controlsRef={controlsRef}
-
-            />
-            <Model 
-              position={[4, -1.5, 4]} 
-              rotation={[0, Math.PI/4, 0]}
-              scale={[2,2,2]}
-              model='3d_models/item.glb' 
-              controlsRef={controlsRef}
-
-            />
-            <Model 
-              position={[-2.5, -1.5, 4]} 
-              rotation={[0, Math.PI/4, 0]}
-              scale={[2,2,2]}
-              model='3d_models/item.glb' 
-              controlsRef={controlsRef}
-
-            />
             {/* Walls */}
             <Model 
               position={[-5, 0, 0]} 
@@ -166,6 +159,7 @@ export function ArtGallery() {
               scale={[1,1,1]}
               controlsRef={controlsRef}
               model='3d_models/wall.glb' 
+              
             />
             <Model 
               position={[1, 0, -6]} 
