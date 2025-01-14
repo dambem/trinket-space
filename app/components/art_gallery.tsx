@@ -19,7 +19,7 @@ const CameraContext = React.createContext({ isOrbital: true, toggleCamera: () =>
 function Model({position, rotation,  model, scale, controlsRef}) {
   const { scene } = useGLTF(model) as any
   const {scene: cityScene}  = useGLTF('3d_models/winchester.glb')
-  const texture = useTexture('photos/3dprints/nyc1.png')
+  const texture = useTexture('theeye.png')
   const clonedScene = scene.clone()
   const rigidBodyRef = useRef(null);
 
@@ -30,8 +30,8 @@ function Model({position, rotation,  model, scale, controlsRef}) {
     if (child.name === 'Painting001') {
       child.material = new THREE.MeshStandardMaterial({
         map: texture,
-        metalness: 0.5,
-        roughness: 0.5
+        metalness: 0.1,
+        roughness: 1.0
       })
 
     }
