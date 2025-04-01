@@ -49,15 +49,6 @@
 }
 /* Dark theme colors */
 .dark {
-  background-image: 
-    /* Noise texture overlay */
-    url("noise.svg"),
-    /* Your original gradient */
-    linear-gradient(to left top, #170710, #13050c, #0e0307, #080203, #000000);
-    /* Add blend mode and opacity for the noise texture */
-    background-blend-mode:soft-light, normal;
-    /* Add blend mode and opacity for the noise texture */
-    background-size:  auto, auto;
     --sh-keyword: #f47067;
     --sh-comment: #a19595;
     --sh-jsxliterals: #6266d1;
@@ -65,31 +56,11 @@
     --sh-entity: #e25a1c;
 }
 
-
-.dark::before {
-  content: '';
-  inset: 0;
-  background-image: url('holographictexture.jpg');
-  background-size: cover;
-  opacity: 0.3;
-  mix-blend-mode: soft-light;
-  pointer-events: none;
-  /* Rectangular fade */
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    black 20%,
-    black 80%,
-    transparent
-  );
+.noise {
   background:
-    linear-gradient(
-      to bottom,
-      transparent,
-      black 20%,
-      black 80%,
-      transparent
-    );
+    url(./radial_2.svg);
+    filter: contrast(100%) brightness(100%);
+    background-size: cover;
 
 }
 html {
