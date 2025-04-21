@@ -1,23 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" id="ditheringCanvas">
     <defs>
         <radialGradient id="brightGradient1" gradientTransform="rotate(0)">
-            <stop offset="0%" stop-color="#111111" stop-opacity="0.01" />
-            <stop offset="55%" stop-color="#111111" stop-opacity="0.2"/>
+            <stop offset="10%" stop-color="#FFF111" stop-opacity="0.03" />
+            <stop offset="20%" stop-color="#FFF111" stop-opacity="0.01" />
+            <stop offset="25%" stop-color="#FFF111" stop-opacity="0.03" />
+
+            <stop offset="10%" stop-color="#111111" stop-opacity="0.4"/>
         </radialGradient>
         
         <!-- Dynamic filter that can be modified with sliders -->
         <filter id="customDither" x="0%" y="0%" width="100%" height="100%">
             <feTurbulence id="noiseTurbulence" 
                             type="fractalNoise" 
-                            baseFrequency="0.01" 
-                            numOctaves="12" 
+                            baseFrequency="0.005" 
+                            numOctaves="14" 
                             seed="5" 
                             result="noise" />
             
             <feComponentTransfer id="thresholdEffect" in="noise" result="thresholdNoise">
-                <feFuncR type="discrete" tableValues="0.1 0.1 0.1 0.1 0.1 0.1" />
-                <feFuncG type="discrete" tableValues="0.1 0.1 0.1 0.1 0.1 0.1" />
-                <feFuncB type="discrete" tableValues="0.1 0.1 0.1 0.1 0.1 0.1" />
+                <feFuncR type="discrete" tableValues="0.1 0.1 0.1 0.1 0.1 0.2" />
+                <feFuncG type="discrete" tableValues="0.1 0.1 0.1 0.1 0.2 0.2" />
+                <feFuncB type="discrete" tableValues="0.1 0.2 0.4 0.2 0.1 0.1" />
             </feComponentTransfer>
             <feDisplacementMap id="displacementEffect"
                                 in="SourceGraphic" 
@@ -33,8 +36,8 @@
                         operator="arithmetic" 
                         k1="0.1" 
                         k2="0.3" 
-                        k3="0.1" 
-                        k4="0.0" 
+                        k3="0.02" 
+                        k4="0..2" 
                         result="composited" />
             
             <feBlend id="blendEffect"

@@ -4,10 +4,10 @@ import { ThemeSwitch } from "./theme-switch";
 import { metaData } from "../config";
 
 const navItems = {
-  "/writing ": { name: "writings" },
   "/projects": { name: "projects" },
-  "/photos": { name: "photos" },
-  "/3d": { name: "3d works"}
+  "/writing ": { name: "writings" },
+  // "/photos": { name: "photos" },
+  // "/3d": { name: "3d works"}
 };
   // "/3d": { name: "3d works"}
   //   "/code": { name: "code" },

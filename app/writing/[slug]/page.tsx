@@ -117,7 +117,8 @@ export default async function Blog({ params }: {params: {slug: string}}) {
           prose-headings:text-gray-100
           prose-p:text-gray-300
           prose-a:text-blue-400 hover:prose-a:text-blue-300
-          max-w-none">
+          max-w-none"
+        >
           <CustomMDX source={post} />
         </article>
 
