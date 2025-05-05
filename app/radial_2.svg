@@ -19,8 +19,8 @@
             
             <feComponentTransfer id="thresholdEffect" in="noise" result="thresholdNoise">
                 <feFuncR type="discrete" tableValues="0.1 0.1 0.1 0.1 0.1 0.2" />
-                <feFuncG type="discrete" tableValues="0.1 0.1 0.1 0.1 0.2 0.2" />
-                <feFuncB type="discrete" tableValues="0.1 0.2 0.4 0.2 0.1 0.1" />
+                <feFuncG type="discrete" tableValues="0.2 0.1 0.1 0.1 0.2 0.2" />
+                <feFuncB type="discrete" tableValues="0.3 0.2 0.4 0.2 0.1 0.1" />
             </feComponentTransfer>
             <feDisplacementMap id="displacementEffect"
                                 in="SourceGraphic" 
@@ -35,8 +35,8 @@
                         in2="thresholdNoise" 
                         operator="arithmetic" 
                         k1="0.1" 
-                        k2="0.3" 
-                        k3="0.02" 
+                        k2="0.31" 
+                        k3="0.023" 
                         k4="0..2" 
                         result="composited" />
             
