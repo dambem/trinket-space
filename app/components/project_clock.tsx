@@ -24,16 +24,32 @@ const sampleDescriptions = [
 "A study in preservation techniques applied to digital ephemera, creating permanent records of transient information."
 ];
 
+interface Node {
+  vy: any;
+  vx: any;
+  id: string;
+  name: string;
+  category: string;
+  x: number;
+  y: number;
+  tx: number;
+  ty: number;
+  radius: number;
+  color: string;
+  description: string;
+  dateCreated: string;
+}
 export default function ProjectClock({}){
-    const [nodes, setNodes] = useState([]);
-    const [activeNode, setActiveNode] = useState(null);
+    const [nodes, setNodes] = useState<Node[]>([]);
+    const [activeNode, setActiveNode] = useState<Node | null >(null);
     const simulationRef = useRef(null);
-    const requestRef = useRef(null);
+    const requestRef = useRef<number | null>(null);
     const svgRef = useRef(null);
     const centerX = 400;
     const centerY = 400;
+
     useEffect(() => {
-        const newNodes = [];
+        const newNodes:  Node[] = [];
         const radius = 200;
         categories.forEach((category, idx) => {
           const angleRad = (category.angle * Math.PI) / 180
@@ -44,6 +60,8 @@ export default function ProjectClock({}){
               id: `${category.id}-${i}`,
               name: `${category.name} Project ${i+1}`,
               category: category.id,
+              vx: [],
+              vy: [],
               x: centerX + Math.cos(nodeAngle) * distance,
               y: centerY + Math.sin(nodeAngle) * distance,
               tx: centerX + Math.cos(angleRad) * (radius * 0.7),
@@ -106,7 +124,7 @@ export default function ProjectClock({}){
           };
           return () => {
             simulation.stop();
-            cancelAnimationFrame(requestRef.current);
+            // cancelAnimationFrame(requestRef.current);
           };            
     }, [nodes.length])
 
@@ -212,7 +230,7 @@ export default function ProjectClock({}){
               {/* Nodes */}
               {nodes.map(node => {
                 // Create gem/octagon shape
-                const points = [];
+                const points: number[] = [];
                 const sides = 6;
                 
                 for (let i = 0; i < sides; i++) {
