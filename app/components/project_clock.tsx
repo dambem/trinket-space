@@ -7,13 +7,10 @@ import { nodeServerAppPaths } from 'next/dist/build/webpack/plugins/pages-manife
 
 const categories = [
 { id: "ithastry", name: "PRINCIPA AUTOMATICA", angle: 0, color: "#9370DB" },
-{ id: "hushery", name: "RHETORICA", angle: 45, color: "#FFD700" },
-{ id: "anchory", name: "CORPUS MECHANICA", angle: 90, color: "#4682B4" },
-{ id: "skolespolophy", name: "CARTOGRAPHICA", angle: 135, color: "#32CD32" },
-{ id: "the-bosk", name: "DIMENSIONAL MATERIALIZATION", angle: 180, color: "#FF4500" },
-{ id: "preservation", name: "STORYCRAFT", angle: 225, color: "#FF1493" },
-{ id: "birdsong", name: "APPARITION CONJURATION", angle: 270, color: "#00CED1" },
-{ id: "horomachistry", name: "PRESERVATION VERDANT", angle: 315, color: "#FFA500" }
+{ id: "skolespolophy", name: "CARTOGRAPHICA", angle: 360/5, color: "#32CD32" },
+{ id: "the-bosk", name: "DIMENSIONAL MATERIALIZATION", angle: (360/5)*2, color: "#FF4500" },
+{ id: "preservation", name: "STORYCRAFT", angle: (360/5)*3, color: "#FF1493" },
+{ id: "birdsong", name: "APPARITION CONJURATION", angle: (360/5)*4, color: "#00CED1" },
 ];
 
 const sampleDescriptions = [
@@ -132,13 +129,7 @@ export default function ProjectClock({}){
     const handleNodeClick = (node) => {
         setActiveNode(activeNode?.id === node.id ? null : node);
 
-        // if (simulationRef.current) {
-        //     const clickedNode = simulationRef.current.nodes().find(n => n.id === node.id);
-        //     if (clickedNode) {
-        //         clickedNode.vx = 500;
-        //         clickedNode.vy = 500;
-        //     }
-        //   }
+
 
         if (activeNode?.id !== node.id) {
             setTimeout(() => {
@@ -253,8 +244,7 @@ export default function ProjectClock({}){
                       stroke="white"
                       strokeWidth="1"
                       filter="url(#glow)"
-                    //   opacity={activeNode?.id === node.id ? 1 : 0.8}
-                      transform={activeNode?.id === node.id ? 'scale(1.2)' : 'scale(1)'}
+                      transform={activeNode?.id === node.id ? 'scale(1)' : 'scale(1)'}
                       className="transition-transform duration-300 ease-in-out"
                     />
                   </g>

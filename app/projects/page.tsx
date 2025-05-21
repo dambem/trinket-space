@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { Metadata } from "next";
 import { defineQuery } from "next-sanity";
@@ -10,29 +11,29 @@ import ProjectClock from 'app/components/project_clock';
 //   description: "My Projects",
 // };
 
+import Link from "next/link";
 
 const options = { next: { revalidate: 60 } };
 
 const projects_QUERY = defineQuery(`*[
   _type == "project"
-]{url, title, description, 'imageUrl': image.asset->url, year} | order(created desc)`);
+]{url, title, description, slug, status, tags, 'imageUrl': image.asset->url, year} | order(created desc)`);
 
 export default async function Projects() {
   const projects = await client.fetch(projects_QUERY, {}, options);
-  
-
   return (
       <section className="w-full px-4 md:px-6 ">
         <h1 className="mb-8 text-2xl font-medium tracking-tight title">projects</h1>
 
         <div className="flex flex-col md:flex-row w-screen md:w-auto md:mx-[-35%] gap-8">
 
-        <div className="w-full md:w-1/2">
-        <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-6">
+        <div className="w-full">
+        <div className="grid grid-cols-2 md:grid-cols-3  lg:grid-cols-4 gap-6">
           {projects.map((project, index) => (
-            <a
+            <Link
               key={index}
               href={project.url}
+              // href={`/projects/${project.slug?.current}`}
               target="_blank"
               rel="noopener noreferrer"
               className="group rounded  drop-shadow-md  block bg-transparent	 overflow-hidden shadow-sm hover:shadow-md hover:bg-stone-950 transition-shadow duration-300"
@@ -53,20 +54,23 @@ export default async function Projects() {
                   <span className="text-zinc-500 dark:text-zinc-400 text-xs tabular-nums shrink-0 ml-2">
                     {project.year}
                   </span>
+                  <p>{project.status?.name}</p>
+                  <p>{project.tags?.name}</p>
                 </div>
                 
                 <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed line-clamp-3">
                   {project.description}
                 </p>
               </div>
-            </a>
+              
+            </Link>
           ))}
         </div>
 
         </div>
-        <div className="w-full md:w-1/2">
+        {/* <div className="w-full md:w-1/2">
             <ProjectClock />
-        </div>
+        </div> */}
         </div>
       </section>
     );
