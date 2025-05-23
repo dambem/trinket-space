@@ -58,7 +58,9 @@ export default function Page() {
       </p>
       <p>
         I'm especially excited in the creation of different technical experiences, and love the field of digital technology. 
-        Contact me ( <SocialLink href={socialLinks.linkedin} icon={FaLinkedinIn} />  <SocialLink href={socialLinks.instagram} icon={FaInstagram} /> ) to have a chat about what we might be able to create! 
+        Contact me ( 
+          <SocialLink  href={socialLinks.linkedin} icon={FaLinkedinIn} />  
+          <SocialLink href={socialLinks.instagram} icon={FaInstagram} /> ) to have a chat about what we might be able to create! 
 
       </p>
       <p>
@@ -68,7 +70,11 @@ export default function Page() {
       <a href="https://calendar.notion.so/meet/damian-7sjb11who/zu4r4j3p" className="contact-link" aria-label="GitHub">
               <span>⚡</span> Set-Up a Quick Coffee Chat
       </a>
-
+      <br></br>
+      <br></br>
+      <a href="mailto:damianbemben@geochip.uk" className="contact-link" aria-label="GitHub">
+              <span>📧</span> Unavailable? Pop Me an Email
+      </a>
       </div>
       </main>
     </section>

@@ -12,31 +12,62 @@ import { forceSimulation, forceCenter, forceManyBody, forceCollide } from 'd3';
 import ProjectFlow from 'app/components/connective_tissue';
 
 import Link from "next/link";
+import ProjectFilters from 'app/components/ui/projectpost';
 
 const options = { next: { revalidate: 60 } };
 
 const projects_QUERY = defineQuery(`*[
   _type == "project"
-]{url, title, description, slug, status, tags, 'imageUrl': image.asset->url, year} | order(created desc)`);
+]{url, title, description, slug,
+  'status': status->{value, name},
+  'tags': tags[] ->{value, name},
+    'imageUrl': image.asset->url, year} | order(created desc)`);
+const statuses_QUERY = defineQuery(`*[
+  _type == "statusType"
+]{
+  value,
+  name,
+  color
+} | order(name asc)`);
+
+// Query to get all available tags
+const tags_QUERY = defineQuery(`*[
+  _type == "tagType"
+]{
+  name,
+  value,
+  color
+} | order(name asc)`);
 
 export default async function Projects() {
-  const projects = await client.fetch(projects_QUERY, {}, options);
+  const [projects, statuses, tags] = await Promise.all([
+    client.fetch(projects_QUERY, {}, options),
+    client.fetch(statuses_QUERY, {}, options),
+    client.fetch(tags_QUERY, {}, options)
+  ]);
+  console.log(statuses)
+  console.log(tags)
+
   return (
-      <section className="w-full px-4 md:px-6 ">
+      <section className=" w-full px-4 md:px-6 ">
         <h1 className="mb-8 text-2xl font-medium tracking-tight title">projects</h1>
 
-        <div className="flex flex-col md:flex-row w-screen md:w-auto md:mx-[-35%] gap-8">
+        <div className="flex main-section-min flex-col md:flex-row w-screen md:w-auto md:mx-[-35%] gap-8">
 
         <div className="w-full">
         <h2 className="mb-8 text-2xl font-medium tracking-tight title-left" >My Projects</h2>
+        <ProjectFilters 
+              projects={projects}
+              availableStatuses={statuses}
+              availableTags={tags}
+            />
 
-        <div className="grid grid-cols-2 md:grid-cols-3  lg:grid-cols-4 gap-6">
+        {/* <div className="grid grid-cols-2 md:grid-cols-3  lg:grid-cols-3 gap-6"> */}
 
-          {projects.map((project, index) => (
+          {/* {projects.map((project, index) => (
             <Link
               key={index}
               href={project.url}
-              // href={`/projects/${project.slug?.current}`}
               target="_blank"
               rel="noopener noreferrer"
               className="group rounded  drop-shadow-md  block bg-transparent	 overflow-hidden shadow-sm hover:shadow-md hover:bg-stone-950 transition-shadow duration-300"
@@ -67,8 +98,8 @@ export default async function Projects() {
               </div>
               
             </Link>
-          ))}
-        </div>
+          ))} */}
+        {/* </div> */}
 
         </div>
         {/* <div className="w-full md:w-1/2"> */}
@@ -83,3 +114,4 @@ export default async function Projects() {
       </section>
     );
 }
+              // href={`/projects/${project.slug?.current}`}
