@@ -22,7 +22,7 @@ export default function Page() {
 
 
       <h1 className="text-2xl font-medium tracking-tight title">
-        lamplight - a small portfolio
+        about me
       </h1>
       <a href={socialLinks.github} target="_blank">
       <div className="relative">

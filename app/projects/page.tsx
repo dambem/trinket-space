@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { Metadata } from "next";
 import { defineQuery } from "next-sanity";
@@ -10,6 +9,7 @@ import ProjectClock from 'app/components/project_clock';
 //   title: "Projects",
 //   description: "My Projects",
 // };
+import ProjectFlow from 'app/components/connective_tissue';
 
 import Link from "next/link";
 
@@ -28,7 +28,10 @@ export default async function Projects() {
         <div className="flex flex-col md:flex-row w-screen md:w-auto md:mx-[-35%] gap-8">
 
         <div className="w-full">
+        <h2 className="mb-8 text-2xl font-medium tracking-tight title-left" >My Projects</h2>
+
         <div className="grid grid-cols-2 md:grid-cols-3  lg:grid-cols-4 gap-6">
+
           {projects.map((project, index) => (
             <Link
               key={index}
@@ -68,6 +71,11 @@ export default async function Projects() {
         </div>
 
         </div>
+        {/* <div className="w-full md:w-1/2"> */}
+          {/* <h2 className="mb-8 text-2xl font-medium tracking-tight title" >Project Flow</h2> */}
+          {/* <ProjectFlow/>
+        </div> */}
+
         {/* <div className="w-full md:w-1/2">
             <ProjectClock />
         </div> */}
