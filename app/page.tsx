@@ -19,18 +19,13 @@ function SocialLink({ href, icon: Icon }) {
 export default function Page() {
   return (
     <section>
-
-
       <h1 className="text-2xl font-medium tracking-tight title">
         about me
       </h1>
-      <a href={socialLinks.github} target="_blank">
-      <div className="relative">
-
-        <div className="absolute top-0 left-0 w-full h-full -z-10 mix-blend-screen overflow-y-hidden">
-          <AnimatedBackground />
-        </div>
-          <Image
+      <br></br>
+      <main className="main-section mt-4">
+      <h2 className="section-title text-xl">Welcome!</h2>
+      <Image
           src="/avatar.png"
           alt="Profile photo"
           className="rounded-full bg-gray-100 block lg:mt-5 mt-0 lg:mb-5 mb-10 mx-auto sm:float-right sm:ml-5 sm:mb-5 grayscale hover:grayscale-0"
@@ -39,15 +34,22 @@ export default function Page() {
           height={160}
           priority
         />
+      <a href={socialLinks.github} target="_blank">
+      <div className="relative">
+
+        <div className="absolute top-0 left-0 w-full h-full -z-10 mix-blend-screen overflow-y-hidden">
+          <AnimatedBackground />
+        </div>
+
         </div>
       </a>
       <div className="prose prose-neutral dark:prose-invert max-w-prose">
       <p>
-        Currently, I'm a software engineer at <Link href="https://ada-mode.com/">
+         I'm a Damian, a Software Engineer at <Link href="https://ada-mode.com/">
           AdaMode
         </Link> & <Link href="https://windscope.com/">Windscope</Link> 
         ,
-        where I contribute to cutting-edge projects in the field of clean energy and renewables. 
+        where I contribute to cutting-edge AI projects in the field of clean energy and renewables. 
       </p>
       <p>
           I also created <Link href="https://geochip.uk">
@@ -62,7 +64,13 @@ export default function Page() {
       <p>
         This serves as a little trinket collection of projects, interests, and samples of writing - in a futile attempt to bring back the old internet
       </p>
+
+      <a href="https://calendar.notion.so/meet/damian-7sjb11who/zu4r4j3p" className="contact-link" aria-label="GitHub">
+              <span>⚡</span> Set-Up a Quick Coffee Chat
+      </a>
+
       </div>
+      </main>
     </section>
   );
 }

@@ -4,7 +4,7 @@ import { defineQuery } from "next-sanity";
 import { client } from "app/sanity/client";
 import { motion, AnimatePresence } from 'framer-motion';
 import { forceSimulation, forceCenter, forceManyBody, forceCollide } from 'd3';
-import ProjectClock from 'app/components/project_clock';
+// import ProjectClock from 'app/components/project_clock';
 // export const metadata: Metadata = {
 //   title: "Projects",
 //   description: "My Projects",
