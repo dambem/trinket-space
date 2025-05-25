@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Brass Object with Post-Processing</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0a;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+        #container {
+            width: 100vw;
+            height: 100vh;
+        }
+        #controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.85);
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            font-size: 12px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            min-width: 200px;
+        }
+        .control-group {
+            margin-bottom: 12px;
+        }
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 11px;
+            color: #ccc;
+            font-weight: 500;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 0;
+        }
+        button {
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        button.active {
+            background: rgba(255,165,0,0.3);
+            border-color: rgba(255,165,0,0.5);
+        }
+        .value-display {
+            float: right;
+            color: #888;
+            font-size: 10px;
+        }
+        #info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: #666;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <div id="controls">
+        <div class="control-group">
+            <label>Shape</label>
+            <button id="shapeToggle" class="active">Sphere</button>
+        </div>
+        <div class="control-group">
+            <label>Roughness <span class="value-display" id="roughnessValue">0.12</span></label>
+            <input type="range" id="roughness" min="0" max="1" step="0.01" value="0.12">
+        </div>
+        <div class="control-group">
+            <label>Metalness <span class="value-display" id="metalnessValue">0.98</span></label>
+            <input type="range" id="metalness" min="0" max="1" step="0.01" value="0.98">
+        </div>
+        <div class="control-group">
+            <label>Surface Detail <span class="value-display" id="detailValue">1.0</span></label>
+            <input type="range" id="detail" min="0" max="3" step="0.1" value="1.0">
+        </div>
+        <div class="control-group">
+            <label>Noise Intensity <span class="value-display" id="noiseValue">0.15</span></label>
+            <input type="range" id="noise" min="0" max="0.5" step="0.01" value="0.15">
+        </div>
+        <div class="control-group">
+            <label>Chromatic Aberration <span class="value-display" id="chromaticValue">0.8</span></label>
+            <input type="range" id="chromatic" min="0" max="2" step="0.1" value="0.8">
+        </div>
+        <div class="control-group">
+            <label>Patina <span class="value-display" id="patinaValue">0.15</span></label>
+            <input type="range" id="patina" min="0" max="1" step="0.05" value="0.15">
+        </div>
+        <div class="control-group">
+            <label>Exposure <span class="value-display" id="exposureValue">1.8</span></label>
+            <input type="range" id="exposure" min="0.5" max="3" step="0.1" value="1.8">
+        </div>
+    </div>
+    <div id="info">Click and drag to rotate • Scroll to zoom</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer, composer, mainObject;
+        let mouseX = 0, mouseY = 0, targetRotationX = 0, targetRotationY = 0;
+        let time = 0;
+        let brassMaterial;
+        let currentShape = 'sphere'; // 'sphere' or 'box'
+
+        // Custom shaders for post-processing
+        const filmGrainShader = {
+            uniforms: {
+                tDiffuse: { value: null },
+                amount: { value: 0.15 },
+                time: { value: 0.0 }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform sampler2D tDiffuse;
+                uniform float amount;
+                uniform float time;
+                varying vec2 vUv;
+
+                // High quality noise function
+                float random(vec2 co) {
+                    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+                }
+
+                float noise(vec2 coord) {
+                    vec2 i = floor(coord);
+                    vec2 f = fract(coord);
+                    f = f * f * (3.0 - 2.0 * f);
+                    
+                    float a = random(i);
+                    float b = random(i + vec2(1.0, 0.0));
+                    float c = random(i + vec2(0.0, 1.0));
+                    float d = random(i + vec2(1.0, 1.0));
+                    
+                    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+                }
+
+                void main() {
+                    vec4 color = texture2D(tDiffuse, vUv);
+                    
+                    // Multi-octave film grain
+                    vec2 coord = vUv * 800.0 + time * 0.5;
+                    float grain = 0.0;
+                    grain += noise(coord) * 0.5;
+                    grain += noise(coord * 2.0) * 0.25;
+                    grain += noise(coord * 4.0) * 0.125;
+                    grain += noise(coord * 8.0) * 0.0625;
+                    
+                    // Apply grain with proper blending
+                    grain = (grain - 0.5) * amount;
+                    color.rgb += grain;
+                    
+                    gl_FragColor = color;
+                }
+            `
+        };
+
+        const chromaticAberrationShader = {
+            uniforms: {
+                tDiffuse: { value: null },
+                amount: { value: 0.8 },
+                distortion: { value: 1.0 }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform sampler2D tDiffuse;
+                uniform float amount;
+                uniform float distortion;
+                varying vec2 vUv;
+
+                void main() {
+                    vec2 center = vec2(0.5);
+                    vec2 offset = vUv - center;
+                    float dist = length(offset);
+                    
+                    // Calculate chromatic offset based on distance from center
+                    float aberration = amount * 0.002 * dist * distortion;
+                    
+                    // Sample RGB channels with different offsets
+                    float r = texture2D(tDiffuse, vUv + offset * aberration).r;
+                    float g = texture2D(tDiffuse, vUv).g;
+                    float b = texture2D(tDiffuse, vUv - offset * aberration).b;
+                    
+                    gl_FragColor = vec4(r, g, b, 1.0);
+                }
+            `
+        };
+
+        // Enhanced brass material shader
+        const brassMaterialShader = {
+            uniforms: {
+                time: { value: 0.0 },
+                patina: { value: 0.15 },
+                roughness: { value: 0.12 },
+                metalness: { value: 0.98 },
+                surfaceDetail: { value: 1.0 }
+            },
+            vertexShader: `
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+                varying vec3 vWorldPosition;
+                varying vec2 vUv;
+
+                void main() {
+                    vNormal = normalize(normalMatrix * normal);
+                    vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
+                    vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform float time;
+                uniform float patina;
+                uniform float roughness;
+                uniform float metalness;
+                uniform float surfaceDetail;
+                
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+                varying vec3 vWorldPosition;
+                varying vec2 vUv;
+
+                // Advanced noise functions for surface details
+                float random(vec2 st) {
+                    return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+                }
+
+                float noise(vec2 st) {
+                    vec2 i = floor(st);
+                    vec2 f = fract(st);
+                    f = f * f * (3.0 - 2.0 * f);
+                    
+                    float a = random(i);
+                    float b = random(i + vec2(1.0, 0.0));
+                    float c = random(i + vec2(0.0, 1.0));
+                    float d = random(i + vec2(1.0, 1.0));
+                    
+                    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+                }
+
+                float fbm(vec2 st, int octaves) {
+                    float value = 0.0;
+                    float amplitude = 0.5;
+                    float frequency = 1.0;
+                    
+                    for(int i = 0; i < 6; i++) {
+                        if(i >= octaves) break;
+                        value += amplitude * noise(st * frequency);
+                        amplitude *= 0.5;
+                        frequency *= 2.0;
+                    }
+                    return value;
+                }
+
+                void main() {
+                    vec3 normal = normalize(vNormal);
+                    vec3 viewDir = normalize(-vPosition);
+                    
+                    // Base brass colors
+                    vec3 brassColor = vec3(0.85, 0.65, 0.13);
+                    vec3 darkBrass = vec3(0.65, 0.45, 0.08);
+                    vec3 patinaColor = vec3(0.25, 0.45, 0.25);
+                    
+                    // Surface imperfections using world position for consistency
+                    vec2 surfaceCoord = vWorldPosition.xy * 12.0 + time * 0.01;
+                    float surface = fbm(surfaceCoord, 4) * surfaceDetail;
+                    
+                    // Add scratches and wear patterns
+                    float scratches = 0.0;
+                    scratches += smoothstep(0.98, 1.0, sin(vWorldPosition.x * 200.0)) * 0.3;
+                    scratches += smoothstep(0.95, 1.0, sin(vWorldPosition.y * 150.0 + vWorldPosition.x * 50.0)) * 0.2;
+                    
+                    // Circular wear patterns
+                    float dist = length(vWorldPosition.xy);
+                    float circularWear = sin(dist * 8.0) * exp(-dist * 1.5) * 0.4;
+                    
+                    // Combine all surface details
+                    float totalSurface = surface + scratches + circularWear;
+                    
+                    // Color mixing based on surface normal and imperfections
+                    float fresnel = 1.0 - abs(dot(normal, viewDir));
+                    float colorMix = patina * (0.6 + totalSurface * 0.4);
+                    colorMix *= fresnel * 0.3 + 0.7;
+                    
+                    // Base color variation
+                    vec3 baseColor = mix(brassColor, darkBrass, totalSurface * 0.3);
+                    vec3 finalColor = mix(baseColor, patinaColor, colorMix);
+                    
+                    // Add rim lighting
+                    float rim = pow(fresnel, 2.0);
+                    finalColor += rim * 0.15 * brassColor;
+                    
+                    // Add surface highlights
+                    float highlight = pow(max(0.0, dot(normal, normalize(vec3(1.0, 1.0, 1.0)))), 32.0);
+                    finalColor += highlight * 0.3 * (1.0 - colorMix);
+                    
+                    // Subtle subsurface scattering effect
+                    float subsurface = pow(max(0.0, dot(normal, -viewDir)), 0.5) * 0.1;
+                    finalColor += subsurface * brassColor;
+                    
+                    gl_FragColor = vec4(finalColor, 1.0);
+                }
+            `
+        };
+
+        // Simple post-processing passes
+        class FilmGrainPass {
+            constructor() {
+                this.material = new THREE.ShaderMaterial(filmGrainShader);
+                this.quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.material);
+                this.scene = new THREE.Scene();
+                this.scene.add(this.quad);
+                this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+            }
+
+            render(renderer, writeBuffer, readBuffer) {
+                this.material.uniforms.tDiffuse.value = readBuffer.texture;
+                this.material.uniforms.time.value = time;
+                renderer.setRenderTarget(writeBuffer);
+                renderer.render(this.scene, this.camera);
+            }
+
+            setSize(width, height) {}
+        }
+
+        class ChromaticAberrationPass {
+            constructor() {
+                this.material = new THREE.ShaderMaterial(chromaticAberrationShader);
+                this.quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.material);
+                this.scene = new THREE.Scene();
+                this.scene.add(this.quad);
+                this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+            }
+
+            render(renderer, writeBuffer, readBuffer) {
+                this.material.uniforms.tDiffuse.value = readBuffer.texture;
+                renderer.setRenderTarget(writeBuffer);
+                renderer.render(this.scene, this.camera);
+            }
+
+            setSize(width, height) {}
+        }
+
+        // Simple effect composer
+        class SimpleComposer {
+            constructor(renderer) {
+                this.renderer = renderer;
+                this.passes = [];
+                this.renderTarget1 = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight);
+                this.renderTarget2 = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight);
+                this.writeBuffer = this.renderTarget1;
+                this.readBuffer = this.renderTarget2;
+            }
+
+            addPass(pass) {
+                this.passes.push(pass);
+            }
+
+            render(scene, camera) {
+                let readBuffer = this.readBuffer;
+                let writeBuffer = this.writeBuffer;
+
+                // Render scene to first buffer
+                this.renderer.setRenderTarget(readBuffer);
+                this.renderer.render(scene, camera);
+
+                // Apply each pass
+                for (let i = 0; i < this.passes.length; i++) {
+                    const pass = this.passes[i];
+                    
+                    if (i === this.passes.length - 1) {
+                        // Last pass renders to screen
+                        this.renderer.setRenderTarget(null);
+                    } else {
+                        this.renderer.setRenderTarget(writeBuffer);
+                    }
+                    
+                    pass.render(this.renderer, writeBuffer, readBuffer);
+                    
+                    // Swap buffers
+                    const temp = readBuffer;
+                    readBuffer = writeBuffer;
+                    writeBuffer = temp;
+                }
+            }
+
+            setSize(width, height) {
+                this.renderTarget1.setSize(width, height);
+                this.renderTarget2.setSize(width, height);
+                this.passes.forEach(pass => pass.setSize && pass.setSize(width, height));
+            }
+        }
+
+        function createObject(shape) {
+            if (mainObject) {
+                scene.remove(mainObject);
+            }
+
+            let geometry;
+            if (shape === 'sphere') {
+                geometry = new THREE.SphereGeometry(1.2, 64, 32);
+            } else {
+                geometry = new THREE.BoxGeometry(2, 2, 2);
+            }
+
+            mainObject = new THREE.Mesh(geometry, brassMaterial);
+            mainObject.castShadow = true;
+            mainObject.receiveShadow = true;
+            scene.add(mainObject);
+        }
+
+        function init() {
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a0a);
+            
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 4);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.8;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            document.getElementById('container').appendChild(renderer.domElement);
+
+            // Post-processing setup
+            composer = new SimpleComposer(renderer);
+            
+            const filmGrainPass = new FilmGrainPass();
+            const chromaticPass = new ChromaticAberrationPass();
+            
+            //composer.addPass(filmGrainPass);
+             // composer.addPass(chromaticPass);
+
+            // Create enhanced brass material
+            brassMaterial = new THREE.ShaderMaterial({
+                ...brassMaterialShader,
+                side: THREE.DoubleSide
+            });
+
+            // Sophisticated lighting setup for brass
+            const ambientLight = new THREE.AmbientLight(0x1a1a1a, 0.2);
+            scene.add(ambientLight);
+
+            // Key light (warm brass reflection)
+            const keyLight = new THREE.DirectionalLight(0xffd900, 3.0);
+            keyLight.position.set(4, 4, 3);
+            keyLight.castShadow = true;
+            keyLight.shadow.mapSize.width = 2048;
+            keyLight.shadow.mapSize.height = 2048;
+            keyLight.shadow.camera.near = 0.1;
+            keyLight.shadow.camera.far = 20;
+            keyLight.shadow.camera.left = -5;
+            keyLight.shadow.camera.right = 5;
+            keyLight.shadow.camera.top = 5;
+            keyLight.shadow.camera.bottom = -5;
+            scene.add(keyLight);
+
+            // Fill light (cool blue for contrast)
+            const fillLight = new THREE.DirectionalLight(0x4fa8ff, 1.5);
+            fillLight.position.set(-3, 1, 4);
+            scene.add(fillLight);
+
+            // Rim light (warm orange)
+            const rimLight = new THREE.DirectionalLight(0xff6b35, 2.0);
+            rimLight.position.set(0, -2, -2);
+            scene.add(rimLight);
+
+            // Accent lights for brass highlights
+            const accent1 = new THREE.PointLight(0xffffff, 1.2, 8);
+            accent1.position.set(2, 2, 2);
+            scene.add(accent1);
+
+            const accent2 = new THREE.PointLight(0xffaa00, 1.0, 6);
+            accent2.position.set(-1.5, -1, 2.5);
+            scene.add(accent2);
+
+            const accent3 = new THREE.PointLight(0xff8844, 0.8, 10);
+            accent3.position.set(0, 3, -1);
+            scene.add(accent3);
+
+            createObject('sphere');
+            setupControls();
+            setupInteraction();
+        }
+
+        function setupControls() {
+            const controls = {
+                shapeToggle: document.getElementById('shapeToggle'),
+                roughness: document.getElementById('roughness'),
+                metalness: document.getElementById('metalness'),
+                detail: document.getElementById('detail'),
+                noise: document.getElementById('noise'),
+                chromatic: document.getElementById('chromatic'),
+                patina: document.getElementById('patina'),
+                exposure: document.getElementById('exposure')
+            };
+
+            const values = {
+                roughnessValue: document.getElementById('roughnessValue'),
+                metalnessValue: document.getElementById('metalnessValue'),
+                detailValue: document.getElementById('detailValue'),
+                noiseValue: document.getElementById('noiseValue'),
+                chromaticValue: document.getElementById('chromaticValue'),
+                patinaValue: document.getElementById('patinaValue'),
+                exposureValue: document.getElementById('exposureValue')
+            };
+
+            controls.shapeToggle.addEventListener('click', function() {
+                currentShape = currentShape === 'sphere' ? 'box' : 'sphere';
+                this.textContent = currentShape === 'sphere' ? 'Sphere' : 'Box';
+                createObject(currentShape);
+            });
+
+            controls.roughness.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                brassMaterial.uniforms.roughness.value = value;
+                values.roughnessValue.textContent = value.toFixed(2);
+            });
+
+            controls.metalness.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                brassMaterial.uniforms.metalness.value = value;
+                values.metalnessValue.textContent = value.toFixed(2);
+            });
+
+            controls.detail.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                brassMaterial.uniforms.surfaceDetail.value = value;
+                values.detailValue.textContent = value.toFixed(1);
+            });
+
+            controls.noise.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                composer.passes[0].material.uniforms.amount.value = value;
+                values.noiseValue.textContent = value.toFixed(2);
+            });
+
+            controls.chromatic.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                composer.passes[1].material.uniforms.amount.value = value;
+                values.chromaticValue.textContent = value.toFixed(1);
+            });
+
+            controls.patina.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                brassMaterial.uniforms.patina.value = value;
+                values.patinaValue.textContent = value.toFixed(2);
+            });
+
+            controls.exposure.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                renderer.toneMappingExposure = value;
+                values.exposureValue.textContent = value.toFixed(1);
+            });
+        }
+
+        function setupInteraction() {
+            let isMouseDown = false;
+            
+            renderer.domElement.addEventListener('mousedown', () => isMouseDown = true);
+            renderer.domElement.addEventListener('mouseup', () => isMouseDown = false);
+            renderer.domElement.addEventListener('mouseleave', () => isMouseDown = false);
+            
+            renderer.domElement.addEventListener('mousemove', (event) => {
+                if (isMouseDown) {
+                    mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                    mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+                    targetRotationY = mouseX * Math.PI * 2;
+                    targetRotationX = mouseY * Math.PI;
+                }
+            });
+
+            renderer.domElement.addEventListener('wheel', (event) => {
+                camera.position.z += event.deltaY * 0.01;
+                camera.position.z = Math.max(2, Math.min(10, camera.position.z));
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.016;
+
+            // Update shader uniforms
+            brassMaterial.uniforms.time.value = time;
+
+            // Smooth rotation
+            if (mainObject) {
+                mainObject.rotation.y += (targetRotationY - mainObject.rotation.y) * 0.05;
+                mainObject.rotation.x += (targetRotationX - mainObject.rotation.x) * 0.05;
+                
+                // Subtle automatic rotation
+                mainObject.rotation.y += 0.005;
+                
+                // Subtle floating animation
+                mainObject.position.y = Math.sin(time * 0.8) * 0.05;
+            }
+
+            // Dynamic lighting animation
+            scene.children.forEach(child => {
+                if (child.isPointLight) {
+                    child.intensity = 0.8 + Math.sin(time * 1.5 + child.position.x * 2) * 0.4;
+                    
+                    // Subtle light movement
+                    const originalPos = child.userData.originalPosition || child.position.clone();
+                    if (!child.userData.originalPosition) {
+                        child.userData.originalPosition = originalPos;
+                    }
+                    
+                    child.position.x = originalPos.x + Math.sin(time * 0.7) * 0.2;
+                    child.position.y = originalPos.y + Math.cos(time * 0.9) * 0.1;
+                }
+            });
+
+            // Render with post-processing
+            composer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.addEventListener('resize', onWindowResize, false);
+
+        init();
+        animate();
+    </script>
+</body>
+</html>

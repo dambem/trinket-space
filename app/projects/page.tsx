@@ -55,7 +55,9 @@ export default async function Projects() {
         <div className="flex main-section-min flex-col md:flex-row w-screen md:w-auto md:mx-[-35%] gap-8">
 
         <div className="w-full">
-        <h2 className="mb-8 text-2xl font-medium tracking-tight title-left" >My Projects</h2>
+        <h2 className="mb-8 text-2xl font-medium tracking-tight title-left" >a list of projects i've made/contributed to -  </h2>
+        <p>all variations of finished, ongoing, paused, or failed - click on a project to see the skills, and the (often hard) lessons learned</p>
+        {/* <p> I'm happy to chat about any of these - especially t</p> */}
         <ProjectFilters 
               projects={projects}
               availableStatuses={statuses}

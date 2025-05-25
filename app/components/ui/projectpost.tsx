@@ -4,7 +4,7 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-const STATUS_ORDER = ['active', 'in progress', 'paused', 'completed', 'on hold', 'other'];
+const STATUS_ORDER = ['active', 'back-burner', 'paused', 'completed', 'on hold', 'other'];
 
   
 export default function ProjectFilters({ projects, availableStatuses, availableTags }) {
@@ -56,9 +56,9 @@ export default function ProjectFilters({ projects, availableStatuses, availableT
     return (
       <>
         {/* Tag Filters */}
-        <div className="mb-8 space-y-6">
+        <div className="mb-5 space-y-2">
           <div>
-            <h3 className="text-sm font-medium text-zinc-400 mb-3">Filter by Tags</h3>
+            <h3 className="text-sm font-medium text-zinc-400 mb-4">Filter by Tags</h3>
             <div className="flex flex-wrap gap-2">
               {availableTags.map(tag => (
                 <button
@@ -95,12 +95,12 @@ export default function ProjectFilters({ projects, availableStatuses, availableT
           if (statusProjects.length === 0) return null;
   
           return (
-            <div key={status} className="mb-10">
+            <div key={status} className="mb-6">
               <h2 className="text-xl font-semibold text-zinc-300 mb-6 capitalize">
                 {status} Projects ({statusProjects.length})
               </h2>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-12">
                 <AnimatePresence>
                   {statusProjects.map((project, index) => (
                     <motion.div
@@ -111,6 +111,7 @@ export default function ProjectFilters({ projects, availableStatuses, availableT
                       transition={{ duration: 0.1 }}
                     >
                       <Link
+                        href={project.url}                      
                         href={project.url}
                         target="_blank"
                         rel="noopener noreferrer"
