@@ -111,10 +111,10 @@ export default function ProjectFilters({ projects, availableStatuses, availableT
                       transition={{ duration: 0.1 }}
                     >
                       <Link
-                        href={project.url}                      
-                        href={project.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href={`/projects/${project?.slug?.current}`}
+                        // href={project.url}
+                        // target="_blank"
+                        // rel="noopener noreferrer"
                         className="group rounded drop-shadow-md block bg-transparent overflow-hidden shadow-sm hover:shadow-md hover:bg-stone-950 transition-shadow duration-300"
                       >
                         <div className="relative aspect-video">
