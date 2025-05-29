@@ -100,7 +100,7 @@ export default function ProjectFilters({ projects, availableStatuses, availableT
                 {status} Projects ({statusProjects.length})
               </h2>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-12">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-8">
                 <AnimatePresence>
                   {statusProjects.map((project, index) => (
                     <motion.div

@@ -6,9 +6,11 @@ import { metaData } from "../config";
 import { useState } from 'react';
 
 const navItems = {
-  "/": { name: "about me" },
-  "/projects": { name: "projects" },
-  "/writing ": { name: "writings" },
+  "/": { name: "me & more" },
+  "/projects": { name: "made & making" },
+  "/writing ": { name: "writings & bindings" },
+  // "/sketches": { name: "sketches & snippets" },
+  "/talks": { name: "talks & events"}
   // "/photos": { name: "photos" },
   // "/3d": { name: "3d works"}
 };
@@ -23,7 +25,7 @@ export function Navbar() {
       <header className="header">
             {/* <div className="scroll-progress"></div> */}
 
-          <div className="header-content">
+          <div className="header-content ">
               <div className="avatar">
               <Image alt='spinning lamplight logo'
                  src={isPlaying ? "/lamplight-6.gif" : "/lamplight-static.png"} 
@@ -41,7 +43,7 @@ export function Navbar() {
               </div>
           </div>
           
-          <nav className="nav">
+          <nav className="nav justify-center">
             {Object.entries(navItems).map(([path, { name }]) => (
               <Link
                 key={path}

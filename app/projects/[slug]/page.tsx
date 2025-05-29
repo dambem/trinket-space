@@ -190,7 +190,6 @@ export default async function ProjectPage({
 
             </div>
             <div>
-              Tech Stack: 
                 {techStack?.map((tech: any) => (
                 <span 
                   key={tech.value}
