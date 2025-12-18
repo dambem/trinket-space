@@ -8,9 +8,9 @@ import { useState } from 'react';
 const navItems = {
   "/": { name: "me & more" },
   "/projects": { name: "made & making" },
-  "/writing ": { name: "writings & bindings" },
+  // "/writing ": { name: "writings & bindings" },
   // "/sketches": { name: "sketches & snippets" },
-  "/talks": { name: "talks & events"}
+  // "/talks": { name: "talks & events"}
   // "/photos": { name: "photos" },
   // "/3d": { name: "3d works"}
 };
@@ -29,15 +29,15 @@ export function Navbar() {
               <div className="avatar">
               <Image alt='spinning lamplight logo'
                  src={isPlaying ? "/lamplight-6.gif" : "/lamplight-static.png"} 
-                 width={30}
-                 height={30}
+                 width={100}
+                 height={100}
                  onMouseEnter={() => setIsPlaying(true)}
                  onMouseLeave={() => setIsPlaying(false)}
            
               ></Image>
               </div>
               <div className="header-text">
-                <Link href="/" className="font-mono text-4xl tracking-tight">
+                <Link href="/" className="font-mono text-4xl tracking-tight bg-gradient-to-r from-yellow-200 via-orange-300 to-yellow-200 bg-clip-text text-transparent">
                 {metaData.title}
                 </Link>
               </div>
