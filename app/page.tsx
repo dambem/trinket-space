@@ -1,3 +1,5 @@
+'use client';
+
 import Image from "next/image";
 import { socialLinks } from "./config";
 import Link from "next/link";
@@ -8,7 +10,9 @@ import {
   FaInstagram,
   FaRss,
   FaLinkedinIn,
+  FaChevronDown,
 } from "react-icons/fa6";
+import { useState } from "react";
 function SocialLink({ href, icon: Icon }) {
   return (
     <Link href={href}  style={{display: 'inline-block'}} target="_blank" rel="noopener noreferrer">
@@ -17,9 +21,11 @@ function SocialLink({ href, icon: Icon }) {
   );
 }
 export default function Page() {
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <section>
-      <main className="main-section mt-4">
+
+    <section className="px-4 md:px-0">
+      <main className="main-section mt-4 max-w-prose mx-auto">
       <h2 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-200 via-orange-300 to-yellow-200 bg-clip-text text-transparent">
       Welcome, how did you find me?
       </h2>
@@ -41,9 +47,9 @@ export default function Page() {
 
         </div>
       </a>
-      <div className="prose prose-neutral dark:prose-invert max-w-prose">
+      <div className="prose prose-neutral dark:prose-invert">
       <p>
-         I'm Damian, I create XR technical experiences at the weird intersections of art & technology. 
+         I'm Damian, I create XR technical experiences at the weird intersections & collisions of art & technology. 
          
       </p>
       <p>
@@ -51,27 +57,43 @@ export default function Page() {
 
       </p>
       <p>
-          Currently working as a Senior Software Developer at <Link href="https://www.adamode.co.uk"> AdaMode </Link>, and running  <Link href="https://geochip.uk">
-           GeoChip
-        </Link> a business creating 3D printed and XR projects aimed around making model cities feel alive. 
+          Currently working as a Senior Software Developer at <Link href="https://www.adamode.co.uk"> AdaMode </Link> developing groundbreaking AI applications for the civil nuclear space.          
       </p>
       <p>
-        This serves as a little trinket collection of projects, interests, and samples of writing - in a futile attempt to bring back the old internet. My site is more like a minoan labyrinth than anything else
-      </p>
+        I also run  <Link href="https://geochip.uk">
+           GeoChip
+        </Link> creating 3D printed and XR projects aimed around making cities feel alive. 
 
-      <div className="flex gap-4 content-center justify-evenly">
-      <a href="https://calendar.notion.so/meet/damian-7sjb11who/zu4r4j3p" className="contact-link flex-1 text" aria-label="GitHub">
-              <span>☕️</span> Set-Up a Coffee Call
-      </a>
-      <a href="mailto:damianbemben@geochip.uk" className="contact-link flex-1 text" aria-label="GitHub">
-              <span>📩</span> Pop Me an Email
-      </a>
-      <a href={socialLinks.linkedin} className="contact-link flex-1 text" aria-label="GitHub">
-          <span><SocialLink  href={socialLinks.linkedin} icon={FaLinkedinIn} /></span> Spam me on LinkedIn
-      </a>
-      
+      </p>
+      <p>
+        This site is a trinket collection of projects, interests & writing, a minoan labyrinth attempting to resurrect the old internet.
+      </p>
       </div>
-      </div>
+      <div className="mt-8">
+            {/* Mobile Toggle Button */}
+            <button 
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden w-full flex items-center justify-between p-4 border border-neutral-700 rounded-lg bg-neutral-900/50"
+            >
+              <span className="font-bold">Connect with me</span>
+              <FaChevronDown className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            <div className={`
+              ${isOpen ? 'flex' : 'hidden'} 
+              md:flex flex-col md:flex-row gap-3 mt-2 md:mt-0 md:justify-evenly
+            `}>
+              <a href="https://calendar.notion.so/meet/damian-7sjb11who/zu4r4j3p" className="contact-link flex-1  p-3 md:p-0 rounded-md">
+                <span>☕️</span> Set-Up Coffee Call
+              </a>
+              <a href="mailto:damianbemben@geochip.uk" className="contact-link flex-1  p-3 md:p-0 rounded-md">
+                <span>📩</span> Email Me
+              </a>
+              <a href={socialLinks.linkedin} className="contact-link flex-1  p-3 md:p-0 rounded-md flex items-center gap-2">
+                <FaLinkedinIn /> Spam my LinkedIn
+              </a>
+            </div>
+          </div>
 
       </main>
 
