@@ -4,7 +4,7 @@ import { CustomMDX } from "app/components/mdx";
 import { formatDate } from "app/lib/posts";
 import { metaData } from "app/config";
 import { defineQuery, type SanityDocument } from "next-sanity";
-import { calculateReadingTime } from 'app/components/reading';
+import { calculateReadingTime } from "app/components/reading";
 import { client } from "app/sanity/client";
 import Link from "next/link";
 import Image from "next/image";
@@ -64,20 +64,15 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata | undefined> {
   const project = await client.fetch(PROJECT_QUERY, params, options);
-  
+
   if (!project) {
     return;
   }
 
-  const {
-    title,
-    name,
-    description,
-    year,
-  } = project;
+  const { title, name, description, year } = project;
 
   const projectTitle = title || name;
-  const ogImage = project.imageUrl 
+  const ogImage = project.imageUrl
     ? project.imageUrl
     : `${metaData.baseUrl}/og?title=${encodeURIComponent(projectTitle)}`;
 
@@ -104,23 +99,24 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProjectPage({ 
-  params 
+export default async function ProjectPage({
+  params,
 }: {
   params: { slug: string };
 }) {
   const [project, recommendations] = await Promise.all([
     client.fetch(PROJECT_QUERY, params, options),
-    client.fetch(RECOMMENDATIONS_QUERY, params, options)
+    client.fetch(RECOMMENDATIONS_QUERY, params, options),
   ]);
 
   if (!project) {
     notFound();
   }
 
-  const recommendation = recommendations.length > 0 
-    ? recommendations[Math.floor(Math.random() * recommendations.length)]
-    : null;
+  const recommendation =
+    recommendations.length > 0
+      ? recommendations[Math.floor(Math.random() * recommendations.length)]
+      : null;
 
   const {
     post,
@@ -134,7 +130,7 @@ export default async function ProjectPage({
     tags,
     techStack,
     imageUrl,
-    created
+    created,
   } = project;
 
   const projectTitle = title || name;
@@ -148,26 +144,26 @@ export default async function ProjectPage({
             <h1 className="text-2xl font-semibold tracking-tight text-yellow-200 text-gray-100">
               {projectTitle}
             </h1>
-            
+
             {/* Project meta information */}
             <div className="flex flex-wrap items-center gap-4 text-sm">
               <span className="text-neutral-600 dark:text-neutral-400">
                 {year}
               </span>
-              
+
               {status && (
-                <span 
+                <span
                   className="rounded px-2 py-1 text-xs font-medium text-neutral-900 ring-1 ring-inset ring-gray-500/10"
-                  style={{ backgroundColor: '#fde047' }}
+                  style={{ backgroundColor: "#fde047" }}
                 >
                   {status.title}
                 </span>
               )}
-              
+
               {url && (
-                <Link 
-                  href={url} 
-                  target="_blank" 
+                <Link
+                  href={url}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:text-blue-300 text-xs"
                 >
@@ -179,22 +175,21 @@ export default async function ProjectPage({
             {/* Tags and Tech Stack */}
             <div className="flex flex-wrap gap-2">
               {tags?.map((tag: any) => (
-                <span 
+                <span
                   key={tag.value}
                   className="rounded px-2 py-1 text-xs text-neutral-900 ring-1 ring-inset ring-gray-500/10"
-                  style={{ backgroundColor: tag.color || '#e5e7eb' }}
+                  style={{ backgroundColor: tag.color || "#e5e7eb" }}
                 >
                   {tag.title}
                 </span>
               ))}
-
             </div>
             <div>
-                {techStack?.map((tech: any) => (
-                <span 
+              {techStack?.map((tech: any) => (
+                <span
                   key={tech.value}
                   className="rounded px-2 py-1 text-xs bg-blue-100 text-blue-900 ring-1 ring-inset ring-blue-500/10"
-                  style={{ backgroundColor: tech.color || '#dbeafe' }}
+                  style={{ backgroundColor: tech.color || "#dbeafe" }}
                 >
                   {tech.title}
                 </span>
@@ -222,7 +217,8 @@ export default async function ProjectPage({
         )}
 
         {/* Main content */}
-        <article className="prose prose-quoteless prose-neutral dark:prose-invert
+        <article
+          className="prose prose-quoteless prose-neutral dark:prose-invert
           prose-headings:text-gray-100
           prose-p:text-gray-300
           prose-a:text-blue-400 hover:prose-a:text-blue-300
@@ -237,9 +233,7 @@ export default async function ProjectPage({
             <h2 className="text-xl font-semibold text-gray-100 mb-4">
               Skills Learned
             </h2>
-            <p className="text-gray-300 leading-relaxed">
-              {skillsLearned}
-            </p>
+            <p className="text-gray-300 leading-relaxed">{skillsLearned}</p>
           </div>
         )}
 
@@ -263,22 +257,25 @@ export default async function ProjectPage({
                     {recommendation.year}
                   </span>
                   {recommendation.status && (
-                    <span 
+                    <span
                       className="rounded px-2 py-1 text-xs font-medium text-neutral-900 ring-1 ring-inset ring-gray-500/10"
-                      style={{ backgroundColor: recommendation.status.color || '#fde047' }}
+                      style={{
+                        backgroundColor:
+                          recommendation.status.color || "#fde047",
+                      }}
                     >
                       {recommendation.status.name}
                     </span>
                   )}
                 </div>
               </div>
-              
+
               {recommendation.description && (
                 <span className="text-xs text-neutral-600 dark:text-neutral-200 tracking-tight">
                   {recommendation.description}
                 </span>
               )}
-              
+
               <div className="flex items-center text-xs text-neutral-600 space-x-4">
                 {/* <span className="text-neutral-600 dark:text-neutral-400 tabular-nums text-xs">
                   {formatDate(recommendation.created)}
@@ -286,12 +283,12 @@ export default async function ProjectPage({
                 {recommendation.tags && recommendation.tags.length > 0 && (
                   <div className="flex items-center space-x-1">
                     {recommendation.tags.slice(0, 2).map((tag: any) => (
-                      <span 
+                      <span
                         key={tag.value}
                         className="rounded px-1 py-0.5 text-xs"
-                        style={{ 
-                          backgroundColor: tag.color || '#e5e7eb',
-                          color: '#374151'
+                        style={{
+                          backgroundColor: tag.color || "#e5e7eb",
+                          color: "#374151",
                         }}
                       >
                         {tag.name}

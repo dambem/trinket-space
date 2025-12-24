@@ -1,5 +1,6 @@
-import "./global.css";
-import "./overwrite.css";
+import "./layouts/global.css";
+import "./layouts/overwrite.css";
+import "./layouts/bento.css"
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";

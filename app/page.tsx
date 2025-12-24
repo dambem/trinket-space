@@ -25,14 +25,14 @@ export default function Page() {
   return (
 
     <section className="px-4 md:px-0">
-      <main className="main-section mt-4 max-w-prose mx-auto">
+      <main className="main-section-min max-w-prose mx-auto">
       <h2 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-200 via-orange-300 to-yellow-200 bg-clip-text text-transparent">
       Welcome, how did you find me?
       </h2>
       <Image
           src="/avatar.png"
           alt="Profile photo"
-          className="rounded-full bg-gray-100 block lg:mt-5 mt-0 lg:mb-5 mb-10 mx-auto sm:float-right sm:ml-5 sm:mb-5 grayscale hover:grayscale-0"
+          className="bg-gray-100 block lg:mt-5 mt-0 shadow-md lg:mb-5 mb-10 mx-auto sm:float-right sm:ml-5 sm:mb-5 grayscale hover:grayscale-0"
           unoptimized
           width={140}
           height={140}
@@ -83,13 +83,13 @@ export default function Page() {
               ${isOpen ? 'flex' : 'hidden'} 
               md:flex flex-col md:flex-row gap-3 mt-2 md:mt-0 md:justify-evenly
             `}>
-              <a href="https://calendar.notion.so/meet/damian-7sjb11who/zu4r4j3p" className="contact-link flex-1  p-3 md:p-0 rounded-md">
+              <a href="https://calendar.notion.so/meet/damian-7sjb11who/zu4r4j3p" className="contact-link flex-1  p-3 md:p-0 ">
                 <span>☕️</span> Set-Up Coffee Call
               </a>
-              <a href="mailto:damianbemben@geochip.uk" className="contact-link flex-1  p-3 md:p-0 rounded-md">
+              <a href="mailto:damianbemben@geochip.uk" className="contact-link flex-1  p-3 md:p-0 ">
                 <span>📩</span> Email Me
               </a>
-              <a href={socialLinks.linkedin} className="contact-link flex-1  p-3 md:p-0 rounded-md flex items-center gap-2">
+              <a href={socialLinks.linkedin} className="contact-link flex-1  p-3 md:p-0  flex items-center gap-2">
                 <FaLinkedinIn /> Spam my LinkedIn
               </a>
             </div>

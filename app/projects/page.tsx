@@ -1,18 +1,13 @@
-import React from 'react';
+import React from "react";
 import type { Metadata } from "next";
 import { defineQuery } from "next-sanity";
 import { client } from "app/sanity/client";
-import { motion, AnimatePresence } from 'framer-motion';
-import { forceSimulation, forceCenter, forceManyBody, forceCollide } from 'd3';
-// import ProjectClock from 'app/components/project_clock';
-// export const metadata: Metadata = {
-//   title: "Projects",
-//   description: "My Projects",
-// };
-import ProjectFlow from 'app/components/connective_tissue';
+import { motion, AnimatePresence } from "framer-motion";
+import { forceSimulation, forceCenter, forceManyBody, forceCollide } from "d3";
+import ProjectFlow from "app/components/connective_tissue";
 
 import Link from "next/link";
-import ProjectFilters from 'app/components/ui/projectpost';
+import ProjectFilters from "app/components/ui/projectpost";
 
 const options = { next: { revalidate: 60 } };
 
@@ -43,80 +38,28 @@ export default async function Projects() {
   const [projects, statuses, tags] = await Promise.all([
     client.fetch(projects_QUERY, {}, options),
     client.fetch(statuses_QUERY, {}, options),
-    client.fetch(tags_QUERY, {}, options)
+    client.fetch(tags_QUERY, {}, options),
   ]);
 
-
   return (
-      <section className=" w-full px-4 md:px-6 ">
-
-        <div className="flex main-section-min flex-col md:flex-row w-screen md:w-auto md:mx-[-35%] gap-8">
-
-<div className="w-full space-y-6">
-  {/* More impactful header */}
-  <div className="space-y-3">
-    <h2 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-200 via-orange-300 to-yellow-200 bg-clip-text text-transparent">
-      Project Space
-    </h2>
-    <p className="text-base md:text-lg text-zinc-400 max-w-2xl leading-relaxed">
-      A collection of experiments, failures, and breakthroughs. 
-    </p>
-  </div>        <ProjectFilters 
-              projects={projects}
-              availableStatuses={statuses}
-              availableTags={tags}
-            />
-
-        {/* <div className="grid grid-cols-2 md:grid-cols-3  lg:grid-cols-3 gap-6"> */}
-
-          {/* {projects.map((project, index) => (
-            <Link
-              key={index}
-              href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group rounded  drop-shadow-md  block bg-transparent	 overflow-hidden shadow-sm hover:shadow-md hover:bg-stone-950 transition-shadow duration-300"
-            >
-              <div className="relative aspect-video">
-                <img 
-                  src={project.imageUrl} 
-                  alt={project.title}
-                  className="absolute inset-0 w-full h-full object-cover transition-all duration-300 grayscale group-hover:grayscale-0 transform group-hover:scale-105"
-                />
-              </div>
-              
-              <div className="p-4">
-                <div className="flex justify-between items-baseline mb-3">
-                  <h2 className="font-medium  text-yellow-200 tracking-tight truncate">
-                    {project.title}
-                  </h2>
-                  <span className="text-zinc-500 dark:text-zinc-400 text-xs tabular-nums shrink-0 ml-2">
-                    {project.year}
-                  </span>
-                  <p>{project.status?.name}</p>
-                  <p>{project.tags?.name}</p>
-                </div>
-                
-                <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed line-clamp-3">
-                  {project.description}
-                </p>
-              </div>
-              
-            </Link>
-          ))} */}
-        {/* </div> */}
-
+    <section className=" w-full px-4 md:px-6 ">
+      <div className="flex main-section-min flex-col md:flex-row w-screen md:w-auto md:mx-[-35%] gap-8">
+        <div className="w-full space-y-6">
+          <div className="space-y-3">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-200 via-orange-300 to-yellow-200 bg-clip-text text-transparent">
+              Project Space
+            </h2>
+            <p className="text-base md:text-lg text-zinc-400 max-w-2xl leading-relaxed">
+              A collection of experiments, failures, and breakthroughs.
+            </p>
+          </div>
+          <ProjectFilters
+            projects={projects}
+            availableStatuses={statuses}
+            availableTags={tags}
+          />
         </div>
-        {/* <div className="w-full md:w-1/2"> */}
-          {/* <h2 className="mb-8 text-2xl font-medium tracking-tight title" >Project Flow</h2> */}
-          {/* <ProjectFlow/>
-        </div> */}
-
-        {/* <div className="w-full md:w-1/2">
-            <ProjectClock />
-        </div> */}
-        </div>
-      </section>
-    );
+      </div>
+    </section>
+  );
 }
-              // href={`/projects/${project.slug?.current}`}
