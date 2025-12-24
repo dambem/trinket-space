@@ -69,9 +69,9 @@ export async function generateMetadata({
     return;
   }
 
-  const { title, name, description, year } = project;
+  const { title, description, year } = project;
 
-  const projectTitle = title || name;
+  const projectTitle = title;
   const ogImage = project.imageUrl
     ? project.imageUrl
     : `${metaData.baseUrl}/og?title=${encodeURIComponent(projectTitle)}`;
@@ -160,6 +160,13 @@ export default async function ProjectPage({
                 </span>
               )}
 
+              <Link 
+                href={"/projects"}>
+                <span className="text-blue-400 hover:text-blue-300 text-xs">
+                  Back to Projects
+                </span>
+              </Link>
+
               {url && (
                 <Link
                   href={url}
@@ -170,6 +177,7 @@ export default async function ProjectPage({
                   View Project →
                 </Link>
               )}
+              
             </div>
 
             {/* Tags and Tech Stack */}
@@ -249,7 +257,7 @@ export default async function ProjectPage({
             >
               <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
                 <p className="text-black dark:text-yellow-200 tracking-tight">
-                  {recommendation.title || recommendation.name}
+                  {recommendation.title}
                 </p>
 
                 <div className="flex items-center space-x-2">

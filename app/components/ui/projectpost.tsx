@@ -1,6 +1,7 @@
 // @ts-nocheck
 "use client";
-
+import ProjectCard from "./projectcard";
+import { ProjectCardTest } from "./projectcard";
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,9 +18,11 @@ export default function ProjectFilters({
   projects,
   availableStatuses,
   availableTags,
+  availableMainTags,
 }) {
   const [selectedStatuses, setSelectedStatuses] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedMainTags, setSelectedMainTags] = useState([]);
 
   // Organize projects by status
   const projectsByStatus = useMemo(() => {
@@ -62,6 +65,13 @@ export default function ProjectFilters({
     );
   };
 
+  const toggleMainTag = (tagId) => {
+    setSelectedMainTags((prev) =>
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId]
+    );
+  };
   // Clear all filters
   const clearFilters = () => {
     setSelectedTags([]);
@@ -69,7 +79,6 @@ export default function ProjectFilters({
 
   return (
     <>
-      {/* Tag Filters */}
       <div className="mb-5 space-y-2">
         <div>
           <div className="flex flex-wrap gap-2">
@@ -88,7 +97,25 @@ export default function ProjectFilters({
             ))}
           </div>
         </div>
-
+        <div className="mb-5 space-y-2">
+          <div>
+            <div className="flex flex-wrap gap-2">
+              {availableMainTags.map((tag) => (
+                <button
+                  key={tag.value}
+                  onClick={() => toggleMainTag(tag.value)}
+                  className={`px-3 py-1 text-xs rounded-full border transition-all duration-200 ${
+                    selectedMainTags.includes(tag.value)
+                      ? "bg-yellow-200 text-black border-yellow-200"
+                      : "bg-transparent text-zinc-400 border-zinc-600 hover:border-zinc-400 hover:text-zinc-300"
+                  }`}
+                >
+                  {tag.value}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
         {/* Clear Filters */}
         {selectedTags.length > 0 && (
           <button
@@ -100,92 +127,23 @@ export default function ProjectFilters({
         )}
       </div>
       <div key={status} className="mb-6">
-      <div className="bento-grid gap-8">
+        <div className="bento-grid gap-8">
+          {STATUS_ORDER.map((status) => {
+            const statusProjects = projectsByStatus[status];
 
-      {STATUS_ORDER.map((status) => {
-        const statusProjects = projectsByStatus[status];
+            // Only render section if there are projects
+            if (statusProjects.length === 0) return null;
 
-        // Only render section if there are projects
-        if (statusProjects.length === 0) return null;
-
-        return (
+            return (
               <AnimatePresence>
                 {statusProjects.map((project, index) => (
-                  <motion.div
-                    className={index==1 ? "bento-card-wide" : "bento-card"}
-                    key={project.slug?.current || index}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.1 }}
-                  >
-                    <article>
-                    <Link
-                      href={`/projects/${project?.slug?.current}`}
-                      className="group rounded drop-shadow-md block bg-transparent overflow-hidden shadow-sm hover:shadow-md hover:bg-stone-950 transition-shadow duration-300"
-                    >
-                      <div className="relative aspect-video">
-                        <img
-                          src={project.imageUrl}
-                          alt={project.title}
-                          className="absolute inset-0 w-full h-full object-cover transition-all duration-300 grayscale group-hover:grayscale-0 transform group-hover:scale-105"
-                        />
-                      </div>
-
-                      <div className="p-4">
-                        <div className="flex justify-between items-start mb-3">
-                          <h2 className="font-medium text-yellow-200 tracking-tight truncate flex-1 mr-2">
-                            {project.title}
-                          </h2>
-
-                          {/* Status indicator */}
-                          {project.status && (
-                            <span
-                              className="text-xs px-2 py-1 rounded-full bg-zinc-800 text-zinc-300 whitespace-nowrap"
-                              style={{
-                                backgroundColor: project.status.color
-                                  ? `${project.status.color}20`
-                                  : undefined,
-                                color: project.status.color || undefined,
-                              }}
-                            >
-                              {project.status.value}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Tags */}
-                        {project.tags && project.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mb-3">
-                            {project.tags.map((tag) => (
-                              <span
-                                key={tag.value}
-                                className="text-xs px-2 py-0.5 rounded bg-zinc-700 text-zinc-300"
-                                style={{
-                                  backgroundColor: tag.color
-                                    ? `${tag.color}20`
-                                    : undefined,
-                                  color: tag.color || undefined,
-                                }}
-                              >
-                                {tag.value}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed line-clamp-3">
-                          {project.description}
-                        </p>
-                      </div>
-                    </Link>
-                    </article>
-                  </motion.div>
+                  <ProjectCard project={project} />
+                  // <ProjectCardTest />
                 ))}
               </AnimatePresence>
-        );
-      })}
-      </div>
+            );
+          })}
+        </div>
       </div>
       {/* No results message */}
       {Object.values(projectsByStatus).every((group) => group.length === 0) && (
