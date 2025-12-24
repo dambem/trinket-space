@@ -1,6 +1,12 @@
 import Link from "next/link";
+import localFont from "next/font/local";
 
 import { motion, AnimatePresence } from "framer-motion";
+const AdvercaseFont = localFont({
+  src: "../../font/AdvercaseFont.otf",
+  variable: "--font-advercase",
+  display: "swap",
+});
 export function ProjectCardTest() {
   return (
     <div className="card">
@@ -90,12 +96,13 @@ export default function ProjectCard({ project }) {
 
         <div className="card-content absolute bottom-0 left-0 right-0 z-20 p-5">
           <div className='pb-2'>
-          <h2 className="card-title font-medium text-yellow-200 tracking-tight truncate flex-1 mr-2 mb-5">
-            {project.blurb}
+          <h2 className={`${AdvercaseFont.className} card-title font-medium text-yellow-200 tracking-tight  flex-1 mr-2 mb-5`}>
+            {project.blurb} <b>({new Date(project.start).getFullYear()})</b>
           </h2>
           {project.tagMain && (
           <div className="tags">
-          <span className="tag-primary">{project.tagMain.value} </span>
+          
+          <span className="tag-primary" style={{color: project.tagMain.color.hex}}>{project.tagMain.value}</span>
           </div>
           )}
           </div>

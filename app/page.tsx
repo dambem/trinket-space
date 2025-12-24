@@ -13,6 +13,12 @@ import {
   FaChevronDown,
 } from "react-icons/fa6";
 import { useState } from "react";
+import localFont from "next/font/local";
+const AdvercaseFont = localFont({
+  src: "./font/AdvercaseFont.otf",
+  variable: "--font-advercase",
+  display: "swap",
+});
 function SocialLink({ href, icon: Icon }) {
   return (
     <Link href={href}  style={{display: 'inline-block'}} target="_blank" rel="noopener noreferrer">
@@ -26,7 +32,7 @@ export default function Page() {
 
     <section className="px-4 md:px-0">
       <main className="main-section-min max-w-prose mx-auto">
-      <h2 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-200 via-orange-300 to-yellow-200 bg-clip-text text-transparent">
+      <h2 className={`${AdvercaseFont.className} pb-2 pt-2 text-2xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-200 via-orange-300 to-yellow-200 bg-clip-text text-transparent`}>
       Welcome, how did you find me?
       </h2>
       <Image

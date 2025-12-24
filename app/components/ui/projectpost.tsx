@@ -97,26 +97,7 @@ export default function ProjectFilters({
             ))}
           </div>
         </div>
-        {/* <div className="mb-5 space-y-2">
-          <div>
-            <div className="flex flex-wrap gap-2">
-              {availableMainTags.map((tag) => (
-                <button
-                  key={tag.value}
-                  onClick={() => toggleMainTag(tag.value)}
-                  className={`px-3 py-1 text-xs rounded-full border transition-all duration-200 ${
-                    selectedMainTags.includes(tag.value)
-                      ? "bg-yellow-200 text-black border-yellow-200"
-                      : "bg-transparent text-zinc-400 border-zinc-600 hover:border-zinc-400 hover:text-zinc-300"
-                  }`}
-                >
-                  {tag.value}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div> */}
-        {/* Clear Filters */}
+
         {selectedTags.length > 0 && (
           <button
             onClick={clearFilters}
@@ -128,6 +109,9 @@ export default function ProjectFilters({
       </div>
       <div className="mb-6">
         <div className="bento-grid gap-8">
+          {/* {projects.map((project) => (
+            <ProjectCard project={project} />
+          ))} */}
           {STATUS_ORDER.map((status) => {
             const statusProjects = projectsByStatus[status];
 
