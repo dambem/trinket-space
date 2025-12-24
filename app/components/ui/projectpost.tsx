@@ -126,7 +126,7 @@ export default function ProjectFilters({
           </button>
         )}
       </div>
-      <div key={status} className="mb-6">
+      <div className="mb-6">
         <div className="bento-grid gap-8">
           {STATUS_ORDER.map((status) => {
             const statusProjects = projectsByStatus[status];
