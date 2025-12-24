@@ -97,7 +97,7 @@ export default function ProjectFilters({
             ))}
           </div>
         </div>
-        <div className="mb-5 space-y-2">
+        {/* <div className="mb-5 space-y-2">
           <div>
             <div className="flex flex-wrap gap-2">
               {availableMainTags.map((tag) => (
@@ -115,7 +115,7 @@ export default function ProjectFilters({
               ))}
             </div>
           </div>
-        </div>
+        </div> */}
         {/* Clear Filters */}
         {selectedTags.length > 0 && (
           <button

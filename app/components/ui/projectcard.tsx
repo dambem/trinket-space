@@ -69,7 +69,7 @@ export default function ProjectCard({ project }) {
           />
         </div>
         <div className="card-artifacts">
-          <div className="artifact-badge">  𝜶</div>
+          {/* <div className="artifact-badge">  𝜶</div> */}
             {project.tags && project.tags.length > 0 && (
               <div className="flex flex-wrap gap-1 mb-3">
                 {project.tags.map((tag) => (
@@ -89,24 +89,37 @@ export default function ProjectCard({ project }) {
         </div>
 
         <div className="card-content absolute bottom-0 left-0 right-0 z-20 p-5">
-          <h2 className="card-title font-medium text-yellow-200 tracking-tight truncate flex-1 mr-2">
+          <div className='pb-2'>
+          <h2 className="card-title font-medium text-yellow-200 tracking-tight truncate flex-1 mr-2 mb-5">
             {project.blurb}
           </h2>
+          {project.tagMain && (
+          <div className="tags">
+          <span className="tag-primary">{project.tagMain.value} </span>
+          </div>
+          )}
+          </div>
           <div className="card-meta">
           
           <h3>{project.title}</h3>
           <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed line-clamp-3">
             {project.description}
           </p>
-          <div className="flex items-center gap-3">
-                        <Link
-              href={`/projects/${project?.slug?.current}`}
-              className="group rounded drop-shadow-md block bg-transparent overflow-hidden shadow-sm hover:shadow-md hover:bg-stone-950 transition-shadow duration-300"
-            >
-              View Project
-            </Link>
-
-          </div>
+                <div className="action-buttons justify-end">
+                    <a href={`/projects/${project?.slug?.current}`} className="action-btn" title="About">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 16v-4M12 8h.01"/>
+                        </svg>
+                    </a>
+                    {project.url && (
+                    <a href={project?.url} className="action-btn" title="View Project">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                        </svg>
+                    </a>
+                    )}
+                </div>
 
 
           </div>

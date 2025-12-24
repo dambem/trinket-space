@@ -52,7 +52,7 @@ export default async function Projects() {
 
   return (
     <section className=" w-full px-4 md:px-6 ">
-      <div className="flex main-section-min flex-col md:flex-row w-screen md:w-auto md:mx-[-35%] gap-8">
+      <div className="flex main-section-min flex-col md:flex-row md:w-auto md:mx-[-35%] gap-8">
         <div className="w-full space-y-6">
           <div className="space-y-3">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-200 via-orange-300 to-yellow-200 bg-clip-text text-transparent">
