@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects — Damian Mayfield</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-card: #141416;
+            --bg-card-hover: #1a1a1e;
+            --accent-lime: #c8ff00;
+            --accent-cyan: #00f0ff;
+            --accent-magenta: #ff00aa;
+            --accent-orange: #ff6b35;
+            --text-primary: #f5f5f7;
+            --text-secondary: #8a8a8e;
+            --text-muted: #505055;
+            --border-subtle: rgba(255,255,255,0.06);
+            --radius-sm: 12px;
+            --radius-md: 20px;
+            --radius-lg: 28px;
+            --gap: 16px;
+            --noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Syne', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: var(--noise);
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Animated gradient orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-magenta) 0%, transparent 70%);
+            top: -200px;
+            right: -100px;
+            opacity: 0.15;
+            animation: float1 20s ease-in-out infinite;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%);
+            bottom: -150px;
+            left: -100px;
+            opacity: 0.12;
+            animation: float2 25s ease-in-out infinite;
+        }
+
+        .orb-3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--accent-lime) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.08;
+            animation: float3 18s ease-in-out infinite;
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-50px, 80px) scale(1.1); }
+            66% { transform: translate(30px, -40px) scale(0.95); }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(60px, -60px) scale(1.05); }
+        }
+
+        @keyframes float3 {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-45%, -55%) scale(1.15); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent-lime);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        nav {
+            display: flex;
+            gap: 32px;
+        }
+
+        nav a {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent-lime);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--text-primary);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        nav a.active {
+            color: var(--text-primary);
+        }
+
+        nav a.active::after {
+            width: 100%;
+        }
+
+        /* Page Title */
+        .page-header {
+            margin-bottom: 48px;
+        }
+
+        .page-header h1 {
+            font-size: clamp(48px, 8vw, 96px);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 0.95;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header p {
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 16px;
+            letter-spacing: 0.02em;
+        }
+
+        .page-header span {
+            color: var(--accent-lime);
+        }
+
+        /* Filter Pills */
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .filter-btn {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            padding: 10px 18px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 100px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.03em;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border-color: var(--text-primary);
+        }
+
+        /* Controls Row */
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 4px;
+        }
+
+        .view-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .view-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .view-btn.active {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+        }
+
+        /* Bento Grid */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 200px;
+            gap: var(--gap);
+        }
+
+        /* Card Base */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.8) 100%);
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255,255,255,0.12);
+            background: var(--bg-card-hover);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        /* Card Sizes */
+        .card-large {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        .card-wide {
+            grid-column: span 2;
+        }
+
+        .card-tall {
+            grid-row: span 2;
+        }
+
+        /* Card Content */
+        .card-visual {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover .card-visual img {
+            transform: scale(1.05);
+        }
+
+        /* Placeholder patterns for demo */
+        .pattern {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pattern-geo {
+            background: 
+                linear-gradient(135deg, var(--accent-magenta) 0%, transparent 50%),
+                linear-gradient(225deg, var(--accent-cyan) 0%, transparent 50%),
+                var(--bg-card);
+        }
+
+        .pattern-mesh {
+            background: 
+                radial-gradient(circle at 30% 70%, var(--accent-lime) 0%, transparent 40%),
+                radial-gradient(circle at 70% 30%, var(--accent-orange) 0%, transparent 40%),
+                var(--bg-card);
+        }
+
+        .pattern-grid {
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-color: var(--bg-card);
+        }
+
+        .pattern-wave {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        .pattern-minimal {
+            background: var(--bg-card);
+        }
+
+        .pattern-gradient {
+            background: linear-gradient(135deg, #2d1b4e 0%, #1a1a2e 100%);
+        }
+
+        /* 3D cube decoration */
+        .cube-3d {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 8s linear infinite;
+        }
+
+        .cube-3d .face {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--accent-lime);
+            background: rgba(200, 255, 0, 0.05);
+        }
+
+        .cube-3d .front { transform: translateZ(40px); }
+        .cube-3d .back { transform: rotateY(180deg) translateZ(40px); }
+        .cube-3d .left { transform: rotateY(-90deg) translateZ(40px); }
+        .cube-3d .right { transform: rotateY(90deg) translateZ(40px); }
+        .cube-3d .top { transform: rotateX(90deg) translateZ(40px); }
+        .cube-3d .bottom { transform: rotateX(-90deg) translateZ(40px); }
+
+        @keyframes rotateCube {
+            from { transform: rotateX(-20deg) rotateY(0deg); }
+            to { transform: rotateX(-20deg) rotateY(360deg); }
+        }
+
+        /* Waveform decoration */
+        .waveform {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 40px;
+        }
+
+        .waveform span {
+            width: 4px;
+            background: var(--accent-cyan);
+            border-radius: 2px;
+            animation: wave 1s ease-in-out infinite;
+        }
+
+        .waveform span:nth-child(1) { height: 60%; animation-delay: 0s; }
+        .waveform span:nth-child(2) { height: 100%; animation-delay: 0.1s; }
+        .waveform span:nth-child(3) { height: 40%; animation-delay: 0.2s; }
+        .waveform span:nth-child(4) { height: 80%; animation-delay: 0.3s; }
+        .waveform span:nth-child(5) { height: 30%; animation-delay: 0.4s; }
+        .waveform span:nth-child(6) { height: 70%; animation-delay: 0.5s; }
+        .waveform span:nth-child(7) { height: 50%; animation-delay: 0.6s; }
+        .waveform span:nth-child(8) { height: 90%; animation-delay: 0.7s; }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.5); }
+        }
+
+        /* Card Info */
+        .card-info {
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-large .card-info,
+        .card-tall .card-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 24px;
+        }
+
+        .card-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-lime);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-tag::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 1px;
+            transform: rotate(45deg);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .card-large .card-title {
+            font-size: 28px;
+        }
+
+        .card-desc {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover .card-desc {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card-year {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 12px;
+        }
+
+        /* Tech stack pills */
+        .tech-stack {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .tech-pill {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            padding: 4px 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 100px;
+            color: var(--text-secondary);
+            letter-spacing: 0.02em;
+        }
+
+        /* Featured badge */
+        .featured-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 3;
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            padding: 6px 12px;
+            background: var(--accent-lime);
+            color: var(--bg-primary);
+            border-radius: 100px;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        /* View project arrow */
+        .view-arrow {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.8) rotate(-45deg);
+            transition: all 0.3s ease;
+            z-index: 3;
+        }
+
+        .view-arrow svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--bg-primary);
+        }
+
+        .card:hover .view-arrow {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        /* Timeline View */
+        .bento-grid.timeline-view {
+            display: block;
+            position: relative;
+            padding-left: 60px;
+        }
+
+        .bento-grid.timeline-view::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent-lime) 0%, var(--accent-cyan) 50%, var(--accent-magenta) 100%);
+            border-radius: 2px;
+        }
+
+        /* Timeline year markers */
+        .timeline-year {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            color: var(--accent-lime);
+            letter-spacing: 0.1em;
+            margin: 40px 0 20px;
+            position: relative;
+            display: none;
+        }
+
+        .bento-grid.timeline-view .timeline-year {
+            display: block;
+        }
+
+        .timeline-year::before {
+            content: '';
+            position: absolute;
+            left: -48px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background: var(--bg-primary);
+            border: 3px solid var(--accent-lime);
+            border-radius: 50%;
+        }
+
+        /* Timeline cards */
+        .bento-grid.timeline-view .card {
+            grid-column: span 1 !important;
+            grid-row: span 1 !important;
+            margin-bottom: var(--gap);
+            height: auto;
+            min-height: 140px;
+            flex-direction: row;
+            position: relative;
+        }
+
+        .bento-grid.timeline-view .card::after {
+            content: '';
+            position: absolute;
+            left: -48px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: var(--bg-card);
+            border: 2px solid var(--text-muted);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .bento-grid.timeline-view .card:hover::after {
+            background: var(--accent-lime);
+            border-color: var(--accent-lime);
+            box-shadow: 0 0 20px var(--accent-lime);
+        }
+
+        /* Connector line from dot to card */
+        .bento-grid.timeline-view .card .connector {
+            display: block;
+            position: absolute;
+            left: -36px;
+            top: 50%;
+            width: 36px;
+            height: 2px;
+            background: var(--border-subtle);
+            transition: background 0.3s ease;
+        }
+
+        .bento-grid.timeline-view .card:hover .connector {
+            background: var(--accent-lime);
+        }
+
+        .bento-grid.timeline-view .card .card-visual {
+            width: 200px;
+            min-width: 200px;
+            height: 100%;
+            min-height: 140px;
+        }
+
+        .bento-grid.timeline-view .card .card-info {
+            flex: 1;
+            padding: 24px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .bento-grid.timeline-view .card-large .card-info,
+        .bento-grid.timeline-view .card-tall .card-info {
+            position: relative;
+            bottom: auto;
+            left: auto;
+            right: auto;
+        }
+
+        .bento-grid.timeline-view .card .card-desc {
+            opacity: 1;
+            transform: none;
+        }
+
+        .bento-grid.timeline-view .card .view-arrow {
+            position: relative;
+            bottom: auto;
+            right: auto;
+            margin-left: auto;
+            opacity: 0;
+            transform: translateX(-10px);
+            flex-shrink: 0;
+            align-self: center;
+            margin-right: 20px;
+        }
+
+        .bento-grid.timeline-view .card:hover .view-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .bento-grid.timeline-view .featured-badge {
+            top: 12px;
+            right: auto;
+            left: 12px;
+        }
+
+        /* Timeline bento sub-grid for same year */
+        .timeline-group {
+            display: none;
+        }
+
+        .bento-grid.timeline-view .timeline-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--gap);
+            margin-bottom: var(--gap);
+        }
+
+        .bento-grid.timeline-view .timeline-group .card {
+            margin-bottom: 0;
+        }
+
+        .bento-grid.timeline-view .timeline-group .card .card-visual {
+            width: 100%;
+            min-height: 120px;
+        }
+
+        .bento-grid.timeline-view .timeline-group .card {
+            flex-direction: column;
+        }
+
+        .bento-grid.timeline-view .timeline-group .card .view-arrow {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .bento-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .card-large {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px 16px 60px;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+
+            nav {
+                gap: 20px;
+            }
+
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-auto-rows: 180px;
+            }
+
+            .card-large {
+                grid-column: span 2;
+            }
+
+            .card-wide {
+                grid-column: span 2;
+            }
+
+            .card-tall {
+                grid-row: span 2;
+            }
+
+            .page-header h1 {
+                font-size: 42px;
+            }
+
+            .controls-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            /* Timeline mobile */
+            .bento-grid.timeline-view {
+                padding-left: 40px;
+            }
+
+            .bento-grid.timeline-view::before {
+                left: 12px;
+            }
+
+            .timeline-year::before {
+                left: -32px;
+                width: 12px;
+                height: 12px;
+            }
+
+            .bento-grid.timeline-view .card::after {
+                left: -32px;
+                width: 10px;
+                height: 10px;
+            }
+
+            .bento-grid.timeline-view .card .connector {
+                left: -22px;
+                width: 22px;
+            }
+
+            .bento-grid.timeline-view .card {
+                flex-direction: column;
+            }
+
+            .bento-grid.timeline-view .card .card-visual {
+                width: 100%;
+                min-height: 120px;
+            }
+
+            .bento-grid.timeline-view .timeline-group {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+                grid-auto-rows: 240px;
+            }
+
+            .card-large,
+            .card-wide {
+                grid-column: span 1;
+            }
+
+            .card-tall,
+            .card-large {
+                grid-row: span 1;
+            }
+        }
+
+        /* Stagger animation on load */
+        .card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.6s ease forwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.15s; }
+        .card:nth-child(3) { animation-delay: 0.2s; }
+        .card:nth-child(4) { animation-delay: 0.25s; }
+        .card:nth-child(5) { animation-delay: 0.3s; }
+        .card:nth-child(6) { animation-delay: 0.35s; }
+        .card:nth-child(7) { animation-delay: 0.4s; }
+        .card:nth-child(8) { animation-delay: 0.45s; }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Glitch effect for the title on hover */
+        .page-header h1 {
+            position: relative;
+        }
+
+        .page-header h1:hover {
+            animation: glitch 0.3s ease;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Ambient orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">DAMIAN MAYFIELD</div>
+            <nav>
+                <a href="#">Home</a>
+                <a href="#" class="active">Projects</a>
+                <a href="#">About</a>
+                <a href="#">Speaking</a>
+                <a href="#">Contact</a>
+            </nav>
+        </header>
+
+        <div class="page-header">
+            <h1>Projects</h1>
+            <p>Creative technology at the intersection of art, XR & the tangible. <span>Currently building the future.</span></p>
+        </div>
+
+        <div class="controls-row">
+            <div class="filters">
+                <button class="filter-btn active">All Work</button>
+                <button class="filter-btn">XR / Immersive</button>
+                <button class="filter-btn">3D Print</button>
+                <button class="filter-btn">Installations</button>
+                <button class="filter-btn">AI / ML</button>
+                <button class="filter-btn">Web</button>
+            </div>
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="grid" title="Grid View">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                        <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    </svg>
+                </button>
+                <button class="view-btn" data-view="timeline" title="Timeline View">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="2" x2="12" y2="22"/>
+                        <circle cx="12" cy="6" r="2"/>
+                        <circle cx="12" cy="12" r="2"/>
+                        <circle cx="12" cy="18" r="2"/>
+                        <line x1="14" y1="6" x2="20" y2="6"/>
+                        <line x1="4" y1="12" x2="10" y2="12"/>
+                        <line x1="14" y1="18" x2="20" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="bento-grid" id="projectGrid">
+            <!-- 2025 -->
+            <div class="timeline-year">2025</div>
+            
+            <!-- Featured: LiDAR City Redevelopment -->
+            <div class="card card-large" data-year="2025">
+                <span class="connector"></span>
+                <span class="featured-badge">FEATURED</span>
+                <div class="card-visual">
+                    <div class="pattern pattern-geo"></div>
+                </div>
+                <div class="card-info">
+                    <div class="card-tag">XR / AI Installation</div>
+                    <h3 class="card-title">LiDAR City Redevelopment</h3>
+                    <p class="card-desc">Tactile city model combining LiDAR scanning, SAM segmentation & physical interaction for urban planning visualisation.</p>
+                    <div class="tech-stack">
+                        <span class="tech-pill">Python</span>
+                        <span class="tech-pill">SAM</span>
+                        <span class="tech-pill">LiDAR</span>
+                        <span class="tech-pill">3D Print</span>
+                    </div>
+                </div>
+                <div class="view-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- mclayline -->
+            <div class="card card-tall" data-year="2025">
+                <span class="connector"></span>
+                <div class="card-visual">
+                    <div class="pattern pattern-mesh"></div>
+                </div>
+                <div class="card-info">
+                    <div class="card-tag">Open Source</div>
+                    <h3 class="card-title">mclayline</h3>
+                    <p class="card-desc">Python geospatial package for CSV to GeoPandas GeoDataFrames with MapLibre visualisation.</p>
+                    <div class="tech-stack">
+                        <span class="tech-pill">Python</span>
+                        <span class="tech-pill">GeoPandas</span>
+                        <span class="tech-pill">MapLibre</span>
+                    </div>
+                </div>
+                <div class="view-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 2024 -->
+            <div class="timeline-year">2024</div>
+
+            <!-- GeoChip -->
+            <div class="card" data-year="2024">
+                <span class="connector"></span>
+                <div class="card-visual">
+                    <div class="pattern pattern-grid" style="perspective: 500px;">
+                        <div class="cube-3d">
+                            <div class="face front"></div>
+                            <div class="face back"></div>
+                            <div class="face left"></div>
+                            <div class="face right"></div>
+                            <div class="face top"></div>
+                            <div class="face bottom"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-info">
+                    <div class="card-tag">Startup</div>
+                    <h3 class="card-title">GeoChip</h3>
+                    <p class="card-desc">3D printed model cities that feel alive through XR enhancement.</p>
+                </div>
+                <div class="view-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- RFID Scanner System -->
+            <div class="card" data-year="2024">
+                <span class="connector"></span>
+                <div class="card-visual">
+                    <div class="pattern pattern-minimal" style="background: linear-gradient(135deg, #1e3a5f 0%, #0d1b2a 100%);">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="1.5">
+                            <rect x="2" y="6" width="20" height="12" rx="2"/>
+                            <path d="M6 10h4M6 14h8"/>
+                            <circle cx="18" cy="12" r="2"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-info">
+                    <div class="card-tag">Hardware / Web</div>
+                    <h3 class="card-title">RFID Tag System</h3>
+                    <p class="card-desc">Real-time scanning with FastAPI & Socket.IO.</p>
+                </div>
+                <div class="view-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 2023 -->
+            <div class="timeline-year">2023</div>
+
+            <!-- Festival of the Mind -->
+            <div class="card card-wide" data-year="2023">
+                <span class="connector"></span>
+                <div class="card-visual">
+                    <div class="pattern pattern-wave">
+                        <div class="waveform">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-info">
+                    <div class="card-tag">Exhibition</div>
+                    <h3 class="card-title">Sheffield Festival of the Mind</h3>
+                    <p class="card-desc">Interactive installation exploring the boundaries of human-machine creativity.</p>
+                    <span class="card-year">2023</span>
+                </div>
+                <div class="view-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Mathematical Poetry Viz -->
+            <div class="card" data-year="2023">
+                <span class="connector"></span>
+                <div class="card-visual">
+                    <div class="pattern pattern-gradient">
+                        <svg width="80" height="80" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="30" fill="none" stroke="var(--accent-magenta)" stroke-width="0.5" opacity="0.6">
+                                <animate attributeName="r" values="20;40;20" dur="4s" repeatCount="indefinite"/>
+                            </circle>
+                            <circle cx="50" cy="50" r="20" fill="none" stroke="var(--accent-orange)" stroke-width="0.5" opacity="0.8">
+                                <animate attributeName="r" values="10;30;10" dur="3s" repeatCount="indefinite"/>
+                            </circle>
+                            <circle cx="50" cy="50" r="10" fill="none" stroke="var(--accent-lime)" stroke-width="1" opacity="1">
+                                <animate attributeName="r" values="5;15;5" dur="2s" repeatCount="indefinite"/>
+                            </circle>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-info">
+                    <div class="card-tag">Creative Code</div>
+                    <h3 class="card-title">Mathematical Poetry</h3>
+                    <p class="card-desc">p5.js visualisations translating verse into motion.</p>
+                </div>
+                <div class="view-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Ongoing -->
+            <div class="timeline-year">Ongoing</div>
+
+            <!-- make~ Meetup -->
+            <div class="card card-wide" data-year="ongoing">
+                <span class="connector"></span>
+                <div class="card-visual">
+                    <div class="pattern" style="background: linear-gradient(135deg, #2a1f4e 0%, #1a1428 100%); font-family: 'Syne', sans-serif; font-size: 64px; font-weight: 800; color: var(--accent-lime);">
+                        make~
+                    </div>
+                </div>
+                <div class="card-info">
+                    <div class="card-tag" style="color: var(--accent-orange);">Community</div>
+                    <h3 class="card-title">make~ Southampton</h3>
+                    <p class="card-desc">Monthly meetup for tech, art & innovation culture. Building creative community in the south.</p>
+                </div>
+                <div class="view-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- AdaMode Clean Energy -->
+            <div class="card" data-year="ongoing">
+                <span class="connector"></span>
+                <div class="card-visual">
+                    <div class="pattern" style="background: linear-gradient(180deg, #0a2f1f 0%, #0a1a14 100%);">
+                        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--accent-lime)" stroke-width="1.5">
+                            <path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/>
+                            <circle cx="12" cy="12" r="8" stroke-dasharray="4 2"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-info">
+                    <div class="card-tag">AI / Energy</div>
+                    <h3 class="card-title">AdaMode</h3>
+                    <p class="card-desc">AI for clean energy & renewables.</p>
+                </div>
+                <div class="view-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple filter interaction
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // View toggle (grid/timeline)
+        const viewBtns = document.querySelectorAll('.view-btn');
+        const projectGrid = document.getElementById('projectGrid');
+
+        viewBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                viewBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const view = btn.dataset.view;
+                
+                if (view === 'timeline') {
+                    projectGrid.classList.add('timeline-view');
+                    // Re-trigger animations
+                    const cards = projectGrid.querySelectorAll('.card');
+                    cards.forEach((card, i) => {
+                        card.style.animation = 'none';
+                        card.offsetHeight; // Trigger reflow
+                        card.style.animation = `fadeUp 0.5s ease forwards ${i * 0.08}s`;
+                    });
+                } else {
+                    projectGrid.classList.remove('timeline-view');
+                    // Re-trigger animations
+                    const cards = projectGrid.querySelectorAll('.card');
+                    cards.forEach((card, i) => {
+                        card.style.animation = 'none';
+                        card.offsetHeight; // Trigger reflow
+                        card.style.animation = `fadeUp 0.6s ease forwards ${i * 0.05}s`;
+                    });
+                }
+            });
+        });
+
+        // Subtle parallax on orbs
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            
+            document.querySelector('.orb-1').style.transform = `translate(${x * 0.5}px, ${y * 0.5}px)`;
+            document.querySelector('.orb-2').style.transform = `translate(${-x * 0.3}px, ${-y * 0.3}px)`;
+        });
+    </script>
+</body>
+</html>
